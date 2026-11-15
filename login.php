@@ -18,7 +18,6 @@
 
         $account = findAccount($username);
 
-        // same message for both so nobody can guess which usernames exist
         if(!$account || !password_verify($password, $account["password"])){
             $errors[] = "Wrong username or password.";
         } else {
