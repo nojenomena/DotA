@@ -1,10 +1,17 @@
 // battle controls: keyboard (WASD / arrows, Enter / Space, Esc) and mouse
 
-let selected = 0;      // menu button: 0 attack, 1 skill, 2 item, 3 run
-let mode = "menu";     // "menu", "target", "wait" or "over"
-let target = 0;        // which enemy is picked
+let selected = 0;        // menu button: 0 attack, 1 skill, 2 item, 3 run
+let mode = "menu";       // "menu", "skills", "target", "ally", "wait" or "over"
+let target = 0;          // which enemy (or party member for heals) is picked
+let skillSelected = 0;   // which skill in the skill list
+let usingSkill = -1;     // the skill being aimed, -1 = normal attack
 
 const commands = ["attack", "skill", "item", "run"];
+
+// the party member whose turn it is
+function actor() {
+    return battle.party[battle.order[battle.turn]];
+}
 
 // hp bar color and width
 function setBar(id, fighter) {
@@ -19,6 +26,37 @@ function setBar(id, fighter) {
         bar.style.backgroundColor = "orange";
     } else {
         bar.style.backgroundColor = "red";
+    }
+}
+
+// makes the skill buttons for whoever's turn it is
+function showSkills() {
+    const list = document.getElementById("skill-list");
+    const unit = actor();
+    const unitSkills = skills[unit.unit_class];
+
+    list.innerHTML = "";
+
+    for (let i = 0; i < unitSkills.length; i++) {
+        const button = document.createElement("button");
+        let text = unitSkills[i].name;
+
+        if (unit.level < unitSkills[i].level) {
+            text = text + " (Lv " + unitSkills[i].level + ")";
+        } else if (unit.cooldowns[i] > 0) {
+            text = text + " (ready in " + unit.cooldowns[i] + ")";
+        }
+
+        button.innerText = text;
+        button.className = "command";
+        if (skillSelected == i) {
+            button.className = "command is-selected";
+        }
+        button.onclick = function () {
+            chooseSkill(i);
+        };
+
+        list.appendChild(button);
     }
 }
 
@@ -42,6 +80,9 @@ function updateScreen() {
         if (mode != "over" && battle.order[battle.turn] == i) {
             box.className = box.className + " is-acting";
         }
+        if (mode == "ally" && target == i) {
+            box.className = box.className + " is-selected";
+        }
     }
 
     // enemies
@@ -50,6 +91,7 @@ function updateScreen() {
         const box = document.getElementById("enemy-" + i);
 
         document.getElementById("enemy-hp-" + i).innerText = "HP " + enemy.current_hp + " / " + enemy.max_hp;
+        document.getElementById("enemy-status-" + i).innerText = Object.keys(enemy.status).join(", ");
         setBar("enemy-bar-" + i, enemy);
 
         box.className = "slot enemy-slot";
@@ -73,6 +115,18 @@ function updateScreen() {
         }
     }
 
+    // skill list replaces the menu while picking a skill
+    if (mode == "skills") {
+        document.getElementById("menu").style.display = "none";
+        document.getElementById("skill-list").style.display = "block";
+        showSkills();
+    } else {
+        document.getElementById("skill-list").style.display = "none";
+        if (mode != "over") {
+            document.getElementById("menu").style.display = "block";
+        }
+    }
+
     document.getElementById("round").innerText = "Round " + battle.round;
 
     // message on top of the menu
@@ -82,19 +136,36 @@ function updateScreen() {
         document.getElementById("menu").style.display = "none";
         document.getElementById("battle-over").style.display = "block";
 
+        const button = document.getElementById("continue-button");
+
         if (battle.result == "won") {
             message.innerText = "Victory!";
+            button.innerText = "Next Floor";
         } else if (battle.result == "lost") {
             message.innerText = "Defeat...";
+            button.innerText = "Try Again";
         } else {
             message.innerText = "You escaped.";
+            button.innerText = "Try Again";
         }
+
+        // nothing left to climb
+        if (battle.cleared) {
+            message.innerText = "You cleared the tower!";
+            document.getElementById("continue-form").style.display = "none";
+        }
+    } else if (mode == "skills") {
+        message.innerText = "Which skill? (Esc to go back)";
+    } else if (mode == "target" && usingSkill >= 0) {
+        message.innerText = "Use " + skills[actor().unit_class][usingSkill].name + " on which enemy? (Esc to go back)";
     } else if (mode == "target") {
         message.innerText = "Attack which enemy? (Esc to go back)";
+    } else if (mode == "ally") {
+        message.innerText = "Use " + skills[actor().unit_class][usingSkill].name + " on who? (Esc to go back)";
     } else if (mode == "wait") {
         message.innerText = "...";
     } else {
-        message.innerText = "What will " + battle.party[battle.order[battle.turn]].unit_name + " do?";
+        message.innerText = "What will " + actor().unit_name + " do?";
     }
 }
 
@@ -115,11 +186,12 @@ function sendAction(command) {
     fetch("battle_action.php", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ command: command, target: target })
+        body: JSON.stringify({ command: command, target: target, skill: usingSkill })
     })
     .then(response => response.json())
     .then(data => {
         mode = "menu";
+        usingSkill = -1;
 
         if (data.error) {
             updateScreen();
@@ -133,38 +205,40 @@ function sendAction(command) {
         }
 
         selected = 0;
+        skillSelected = 0;
         updateScreen();
     })
     .catch(error => {
         mode = "menu";
+        usingSkill = -1;
         updateScreen();
         document.getElementById("message").innerText = "Connection problem. Try again.";
     });
 }
 
-// first enemy that is still alive
-function firstEnemy() {
-    for (let i = 0; i < battle.enemies.length; i++) {
-        if (battle.enemies[i].current_hp > 0) {
+// first enemy (or party member) that is still alive
+function firstAlive(list) {
+    for (let i = 0; i < list.length; i++) {
+        if (list[i].current_hp > 0) {
             return i;
         }
     }
     return 0;
 }
 
-// move to the next (+1) or previous (-1) enemy that is still alive
-function moveTarget(step) {
-    for (let tries = 0; tries < battle.enemies.length; tries++) {
+// move to the next (+1) or previous (-1) one that is still alive
+function moveTarget(list, step) {
+    for (let tries = 0; tries < list.length; tries++) {
         target = target + step;
 
         if (target < 0) {
-            target = battle.enemies.length - 1;
+            target = list.length - 1;
         }
-        if (target >= battle.enemies.length) {
+        if (target >= list.length) {
             target = 0;
         }
 
-        if (battle.enemies[target].current_hp > 0) {
+        if (list[target].current_hp > 0) {
             return;
         }
     }
@@ -176,21 +250,77 @@ function chooseCommand(number) {
     }
 
     selected = number;
+    usingSkill = -1;
 
     if (commands[number] == "attack") {
         mode = "target";
-        target = firstEnemy();
+        target = firstAlive(battle.enemies);
+        updateScreen();
+    } else if (commands[number] == "skill") {
+        mode = "skills";
+        skillSelected = 0;
         updateScreen();
     } else {
         sendAction(commands[number]);
     }
 }
 
-// clicking an enemy attacks it right away
+function chooseSkill(number) {
+    if (mode != "skills") {
+        return;
+    }
+
+    const unit = actor();
+    const skill = skills[unit.unit_class][number];
+    skillSelected = number;
+
+    if (unit.level < skill.level) {
+        updateScreen();
+        document.getElementById("message").innerText = skill.name + " unlocks at Lv " + skill.level + ".";
+        return;
+    }
+    if (unit.cooldowns[number] > 0) {
+        updateScreen();
+        document.getElementById("message").innerText = skill.name + " is ready in " + unit.cooldowns[number] + " rounds.";
+        return;
+    }
+
+    usingSkill = number;
+
+    if (skill.target == "enemy") {
+        mode = "target";
+        target = firstAlive(battle.enemies);
+        updateScreen();
+    } else if (skill.target == "ally") {
+        mode = "ally";
+        target = battle.order[battle.turn];    // starts on yourself
+        updateScreen();
+    } else {
+        sendAction("skill");    // all enemies or all allies, no need to pick
+    }
+}
+
+// clicking an enemy attacks it (or uses the skill being aimed)
 function clickEnemy(number) {
-    if ((mode == "menu" || mode == "target") && battle.enemies[number].current_hp > 0) {
+    if (battle.enemies[number].current_hp <= 0) {
+        return;
+    }
+
+    if (mode == "target") {
         target = number;
+        sendAction(usingSkill >= 0 ? "skill" : "attack");
+    } else if (mode == "menu") {
+        target = number;
+        usingSkill = -1;
         sendAction("attack");
+    }
+}
+
+// clicking a party member while picking who to heal
+function clickAlly(number) {
+    if (mode == "ally" && battle.party[number].current_hp > 0) {
+        target = number;
+        sendAction("skill");
     }
 }
 
@@ -234,19 +364,39 @@ document.addEventListener("keydown", function (event) {
             chooseCommand(selected);
             return;
         }
-    } else if (mode == "target") {
+    } else if (mode == "skills") {
+        const count = skills[actor().unit_class].length;
+
         if (up || left) {
-            moveTarget(-1);
+            skillSelected = (skillSelected - 1 + count) % count;
         } else if (down || right) {
-            moveTarget(1);
+            skillSelected = (skillSelected + 1) % count;
         } else if (enter) {
-            sendAction("attack");
+            chooseSkill(skillSelected);
             return;
         } else if (back) {
             mode = "menu";
         }
+    } else if (mode == "target" || mode == "ally") {
+        const list = mode == "target" ? battle.enemies : battle.party;
+
+        if (up || left) {
+            moveTarget(list, -1);
+        } else if (down || right) {
+            moveTarget(list, 1);
+        } else if (enter) {
+            sendAction(usingSkill >= 0 ? "skill" : "attack");
+            return;
+        } else if (back) {
+            mode = usingSkill >= 0 ? "skills" : "menu";
+            usingSkill = -1;
+        }
     } else if (mode == "over" && enter) {
-        window.location.href = "saves.php";
+        if (battle.cleared) {
+            window.location.href = "saves.php";
+        } else {
+            document.getElementById("continue-form").submit();
+        }
         return;
     }
 

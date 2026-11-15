@@ -18,12 +18,19 @@
             $party = getParty($save["save_id"]);
             $enemyList = getEnemies();
 
+            // equipped items make the party stronger in battle
+            $items = getInventory($save["save_id"]);
+            foreach($party as $i => $unit){
+                $party[$i] = applyEquipment($unit, $items);
+            }
+
             if(count($party) == 0 || count($enemyList) == 0){
                 exit("This save has no party, or there are no enemies (did you run database/seed.sql?)");
             }
 
-            $enemies = pickEnemies($enemyList, $save["current_floor"]);
-            startBattle($save["save_id"], $save["current_floor"], $party, $enemies);
+            $floor = (int) $save["current_floor"];
+            $enemies = pickEnemies($enemyList, $floor);
+            startBattle((int) $save["save_id"], $floor, $party, $enemies);
         }
 
         // reload without the POST so refreshing the page doesn't start a new battle
@@ -60,7 +67,7 @@
         <!-- party on the left -->
         <div id="party-side">
             <?php foreach($battle["party"] as $i => $unit){ ?>
-                <div class="slot" id="party-<?php echo $i; ?>">
+                <div class="slot" id="party-<?php echo $i; ?>" onclick="clickAlly(<?php echo $i; ?>)">
                     <!-- PLACEHOLDER: unit picture -->
                     <div class="sprite"><?php echo strtoupper(substr($unit["unit_class"], 0, 1)); ?></div>
                     <b><?php echo htmlspecialchars($unit["unit_name"]); ?></b> - Lv <?php echo $unit["level"]; ?><br>
@@ -82,6 +89,7 @@
                     <br>
                     <div class="hp-bar-back"><div class="hp-bar" id="enemy-bar-<?php echo $i; ?>"></div></div>
                     <span class="hp-text" id="enemy-hp-<?php echo $i; ?>"></span>
+                    <span class="small-text" id="enemy-status-<?php echo $i; ?>"></span>
                 </div>
             <?php } ?>
         </div>
@@ -106,8 +114,18 @@
                 <button class="command" id="cmd-3" onclick="chooseCommand(3)">Run</button>
             </div>
 
+            <!-- battle.js puts the skill buttons here -->
+            <div id="skill-list" style="display: none;"></div>
+
             <!-- PLACEHOLDER: real victory / game over screen later -->
-            <p id="battle-over" style="display: none;"><a href="saves.php">Back to saves</a></p>
+            <div id="battle-over" style="display: none;">
+                <form method="POST" action="battle.php" id="continue-form" style="display: inline;">
+                    <input type="hidden" name="save_id" value="<?php echo $battle["save_id"]; ?>">
+                    <button type="submit" id="continue-button">Next Floor</button>
+                </form>
+                <a href="party.php?save=<?php echo $battle["save_id"]; ?>">Party</a> |
+                <a href="saves.php">Back to saves</a>
+            </div>
 
             <p class="hint" style="margin-top: 8px;">WASD / Arrows = move, Enter / Space = choose, Esc = back</p>
         </div>
@@ -118,6 +136,7 @@
     <script>
         // battle.js reads this
         let battle = <?php echo json_encode($battle, JSON_HEX_TAG | JSON_HEX_AMP); ?>;
+        let skills = <?php echo json_encode($config["skills"], JSON_HEX_TAG | JSON_HEX_AMP); ?>;
     </script>
     <script src="battle.js"></script>
 </body>

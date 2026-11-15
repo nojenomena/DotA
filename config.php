@@ -42,9 +42,45 @@
         "xp_exponent"      => 1.3,   // how fast it grows
         "points_per_level" => 3,
 
-        // enemies get stronger every floor (+12% per floor)
-        "enemy_hp_per_floor"      => 0.12,
-        "enemy_attack_per_floor"  => 0.10,
+        // what 1 upgrade point adds (spent on the party page)
+        "point_hp"      => 5,
+        "point_attack"  => 1,
+        "point_defense" => 1,
+        "point_speed"   => 1,
+
+        // PLACEHOLDER: party heals to full after every battle
+        "heal_after_battle" => true,
+
+        // skills: level = level needed, power = damage x attack (0 = no damage),
+        // cooldown = ROUNDS before it can be used again
+        // target: "enemy", "all_enemies", "ally" or "all_allies"
+        "skills" => [
+            "warrior" => [
+                ["name" => "Shield Bash", "level" => 2, "power" => 0.8, "cooldown" => 3, "target" => "enemy",       "effect" => "stun"],
+                ["name" => "Cleave",      "level" => 5, "power" => 0.9, "cooldown" => 4, "target" => "all_enemies", "effect" => ""],
+            ],
+            "mage" => [
+                ["name" => "Fireball",    "level" => 2, "power" => 1.4, "cooldown" => 3, "target" => "enemy",       "effect" => "burn"],
+                ["name" => "Toxic Cloud", "level" => 5, "power" => 0.6, "cooldown" => 5, "target" => "all_enemies", "effect" => "poison"],
+            ],
+            "cleric" => [
+                ["name" => "Heal",        "level" => 2, "power" => 0,   "cooldown" => 3, "target" => "ally",        "effect" => "heal"],
+                ["name" => "Sanctuary",   "level" => 5, "power" => 0,   "cooldown" => 5, "target" => "all_allies",  "effect" => "heal"],
+            ],
+        ],
+        "heal_percent" => 20,    // heal skills give back 20% of max hp
+
+        // status effects on enemies: damage = % of max hp every turn
+        "status_effects" => [
+            "burn"   => ["damage" => 8, "turns" => 2, "text" => "is burning!"],
+            "poison" => ["damage" => 5, "turns" => 3, "text" => "is poisoned!"],
+            "stun"   => ["damage" => 0, "turns" => 1, "text" => "is stunned!"],    // skips their turn
+        ],
+
+        // enemies get stronger every floor (+15% hp per floor)
+        // PLACEHOLDER: up for testing
+        "enemy_hp_per_floor"      => 0.15,
+        "enemy_attack_per_floor"  => 0.18,
         "enemy_defense_per_floor" => 0.08,
         "enemy_speed_per_floor"   => 0.03,
         "enemy_xp_per_floor"      => 0.10,
@@ -57,4 +93,11 @@
         "crit_multiplier"  => 1.5,
         "run_chance"       => 75,    // percent, can't run from bosses
         "log_max_lines"    => 50,
+
+        // drops after a win (percent)
+        "drop_chance"      => 60,
+        "boss_drop_chance" => 100,
+        // out of 100: common 70, rare 22, epic 7, legendary 1
+        "drop_rarity"      => ["common" => 70, "rare" => 22, "epic" => 7, "legendary" => 1],
+        "boss_drop_rarity" => ["common" => 0, "rare" => 60, "epic" => 30, "legendary" => 10],
     ];

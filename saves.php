@@ -54,6 +54,7 @@
                         <input type="hidden" name="save_id" value="<?php echo $save["save_id"]; ?>">
                         <button type="submit">Play</button>
                     </form>
+                    <button onclick="window.location.href='party.php?save=<?php echo $save["save_id"]; ?>'">Party</button>
                 <?php } else { ?>
                     <p class="small-text" style="text-align: center; margin-top: 80px;">Empty</p>
                     <button onclick="window.location.href='new_save.php?slot=<?php echo $slot; ?>'" style="margin-top: 70px;">New Game</button>

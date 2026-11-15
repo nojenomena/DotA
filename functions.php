@@ -133,11 +133,21 @@
 
     // saves a new battle in the session
     function startBattle($saveId, $floor, $party, $enemies){
-        // PLACEHOLDER: knocked out units come back with 1 hp until the time nga sturyahon ta if ma heal man gd sila
+        global $config;
+
         foreach($party as $i => $unit){
-            if($unit["current_hp"] <= 0){
-                $party[$i]["current_hp"] = 1;
+            // battles start at full hp (the party heals after every battle)
+            $party[$i]["current_hp"] = $unit["max_hp"];
+
+            // one cooldown per skill, 0 = ready
+            $party[$i]["cooldowns"] = [];
+            foreach($config["skills"][$unit["unit_class"]] as $skill){
+                $party[$i]["cooldowns"][] = 0;
             }
+        }
+
+        foreach($enemies as $i => $enemy){
+            $enemies[$i]["status"] = [];    // like ["burn" => 2] = burning for 2 more turns
         }
 
         $names = [];
@@ -154,6 +164,143 @@
             "order"   => getTurnOrder($party),   // party members' turns this round
             "turn"    => 0,                      // whose turn in "order"
             "result"  => "",
+            "cleared" => false,                  // true after beating the final boss
             "log"     => [implode(", ", $names) . " appeared!"],
         ];
+    }
+
+    // party stats with their equipped items (items = rows from getInventory)
+    function applyEquipment($unit, $items){
+        foreach($items as $item){
+            if($item["equipped_by"] == $unit["unit_id"]){
+                $unit["max_hp"]  = (int) round($unit["max_hp"] * $item["hp_mult"]);
+                $unit["attack"]  = (int) round($unit["attack"] * $item["atk_mult"]);
+                $unit["defense"] = (int) round($unit["defense"] * $item["def_mult"]);
+                $unit["speed"]   = (int) round($unit["speed"] * $item["spd_mult"]);
+            }
+        }
+        return $unit;
+    }
+
+    function xpNeeded($level){
+        global $config;
+
+        return (int) round($config["xp_base"] * pow($level, $config["xp_exponent"]));
+    }
+
+    // adds xp and does the level ups. "levels_gained" says how many
+    function addXp($unit, $xp){
+        global $config;
+
+        $class = $config["classes"][$unit["unit_class"]];
+        $unit["xp"] = $unit["xp"] + $xp;
+        $unit["levels_gained"] = 0;
+
+        while($unit["level"] < $config["max_level"] && $unit["xp"] >= xpNeeded($unit["level"])){
+            $unit["xp"] = $unit["xp"] - xpNeeded($unit["level"]);
+            $unit["level"]++;
+            $unit["levels_gained"]++;
+            $unit["upgrade_points"] = $unit["upgrade_points"] + $config["points_per_level"];
+
+            $unit["max_hp"]  = $unit["max_hp"] + $class["hp_up"];
+            $unit["attack"]  = $unit["attack"] + $class["attack_up"];
+            $unit["defense"] = $unit["defense"] + $class["defense_up"];
+            $unit["speed"]   = $unit["speed"] + $class["speed_up"];
+        }
+
+        // no more xp at max level
+        if($unit["level"] >= $config["max_level"]){
+            $unit["xp"] = 0;
+        }
+
+        return $unit;
+    }
+
+    // picks a rarity using the weights in config, or "" for no drop
+    function rollDrop($isBoss){
+        global $config;
+
+        if($isBoss){
+            $chance = $config["boss_drop_chance"];
+            $rarities = $config["boss_drop_rarity"];
+        } else {
+            $chance = $config["drop_chance"];
+            $rarities = $config["drop_rarity"];
+        }
+
+        if(rand(1, 100) > $chance){
+            return "";
+        }
+
+        $roll = rand(1, array_sum($rarities));
+        foreach($rarities as $rarity => $weight){
+            if($roll <= $weight){
+                return $rarity;
+            }
+            $roll = $roll - $weight;
+        }
+        return "";
+    }
+
+    // after a win: xp, level ups, a drop and the next floor, all saved to the database
+    // needs db.php and queries.php. returns the lines for the battle log
+    function giveRewards($battle){
+        global $config;
+
+        $lines = [];
+        $saveId = $battle["save_id"];
+        $floor = $battle["floor"];
+
+        // xp from every enemy
+        $xp = 0;
+        $bossFight = false;
+        foreach($battle["enemies"] as $enemy){
+            $xp = $xp + $enemy["xp_reward"];
+            if($enemy["is_boss"]){
+                $bossFight = true;
+            }
+        }
+        $lines[] = "Everyone gets " . $xp . " XP.";
+
+        // the real stats come from the database, not the battle (the battle has the item bonuses)
+        foreach(getParty($saveId) as $unit){
+            $unit = addXp($unit, $xp);
+
+            if($config["heal_after_battle"]){
+                $unit["current_hp"] = $unit["max_hp"];
+            }
+
+            updateUnit($unit);
+
+            if($unit["levels_gained"] > 0){
+                $lines[] = $unit["unit_name"] . " reached Lv " . $unit["level"] . "! (+" . ($unit["levels_gained"] * $config["points_per_level"]) . " upgrade points)";
+            }
+        }
+
+        // item drop
+        $rarity = rollDrop($bossFight);
+        if($rarity != ""){
+            $item = getRandomItem($rarity, $floor);
+            if($item){
+                addItem($saveId, $item["item_id"], $floor);
+                $lines[] = "Found an item: " . $item["item_name"] . " (" . $rarity . ")!";
+            }
+        }
+
+        // next floor
+        $save = getSave($saveId, $_SESSION["account_id"]);
+        $cleared = $save["is_cleared"] == "t";
+
+        if($floor >= $config["total_floors"]){
+            $cleared = true;
+            $nextFloor = $floor;
+            $lines[] = "The Final Developer is defeated! You cleared the tower!";
+        } else {
+            $nextFloor = $floor + 1;
+            $lines[] = "On to floor " . $nextFloor . "!";
+        }
+
+        updateSaveProgress($saveId, $nextFloor, max($nextFloor, $save["highest_floor"]), $cleared);
+
+        return $lines;
     }
