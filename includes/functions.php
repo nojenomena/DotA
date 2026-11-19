@@ -387,3 +387,12 @@
 
         return $lines;
     }
+
+    // total xp of all the enemies in this battle
+    function battleXp($battle){
+        $xp = 0;
+        foreach($battle["enemies"] as $enemy){
+            $xp = $xp + $enemy["xp_reward"];
+        }
+        return $xp;
+    }

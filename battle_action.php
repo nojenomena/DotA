@@ -280,25 +280,31 @@
         break;
     }
 
-    // a win saves xp, levels, the drop and the next floor to the database
-    if($battle["result"] == "won"){
+    // the battle just ended: give the rewards and save the result for the records page
+    if($battle["result"] != ""){
         include("includes/db.php");
         include("includes/queries.php");
 
-        $newLog[] = "Victory! All enemies were defeated.";
-        $newLog = array_merge($newLog, giveRewards($battle));
+        $xpGained = 0;
 
-        if($battle["floor"] >= $config["total_floors"]){
-            $battle["cleared"] = true;
+        // a win saves xp, levels, the drop and the next floor
+        if($battle["result"] == "won"){
+            $newLog[] = "Victory! All enemies were defeated.";
+            $newLog = array_merge($newLog, giveRewards($battle));
+            $xpGained = battleXp($battle);
+
+            if($battle["floor"] >= $config["total_floors"]){
+                $battle["cleared"] = true;
+            }
         }
-    }
 
-    // a loss still saves some xp (running away gives nothing)
-    if($battle["result"] == "lost"){
-        include("includes/db.php");
-        include("includes/queries.php");
+        // a loss still gives some xp (running away gives nothing)
+        if($battle["result"] == "lost"){
+            $newLog = array_merge($newLog, giveLossXp($battle));
+            $xpGained = (int) round(battleXp($battle) * $config["xp_on_loss"] / 100);
+        }
 
-        $newLog = array_merge($newLog, giveLossXp($battle));
+        addBattleResult($battle["save_id"], $battle["floor"], $battle["result"], $battle["round"], $xpGained);
     }
 
     // keep only the last lines so the session doesn't get too big

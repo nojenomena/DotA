@@ -1,4 +1,7 @@
 <?php
+    // dates and times on the records page use Philippine time
+    date_default_timezone_set("Asia/Manila");
+
     // game settings
 
     $config = [

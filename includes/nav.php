@@ -4,6 +4,7 @@
 
     <?php if(isset($_SESSION["account_id"])){ ?>
         <a href="<?php echo $root; ?>saves.php">Saves</a>
+        <a href="<?php echo $root; ?>records.php">Records</a>
         <a href="<?php echo $root; ?>account.php">Account</a>
         <span style="float: right;">
             <?php echo htmlspecialchars($_SESSION["username"]); ?> |

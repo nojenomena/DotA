@@ -91,11 +91,23 @@ CREATE TABLE IF NOT EXISTS enemy_templates (
 );
 
 
+-- battle_results: one row for every finished battle, score = xp_gained (week 6, records.php)
+CREATE TABLE IF NOT EXISTS battle_results (
+    result_id    SERIAL PRIMARY KEY,
+    save_id      INT         NOT NULL REFERENCES save_slots(save_id) ON DELETE CASCADE,
+    floor        INT         NOT NULL,
+    result       VARCHAR(10) NOT NULL CHECK (result IN ('won', 'lost', 'fled')),
+    rounds       INT         NOT NULL,
+    xp_gained    INT         NOT NULL DEFAULT 0,
+    finished_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
 -- indexes for faster lookups
 CREATE INDEX IF NOT EXISTS idx_save_slots_account ON save_slots(account_id);
 CREATE INDEX IF NOT EXISTS idx_party_units_save   ON party_units(save_id);
 CREATE INDEX IF NOT EXISTS idx_inventory_save     ON inventory(save_id);
 CREATE INDEX IF NOT EXISTS idx_inventory_equipped ON inventory(equipped_by);
+CREATE INDEX IF NOT EXISTS idx_battle_results_save ON battle_results(save_id);
 
 
 -- row-level security policies to ensure players can only access their own data
@@ -105,6 +117,7 @@ ALTER TABLE party_units     ENABLE ROW LEVEL SECURITY;
 ALTER TABLE item_templates  ENABLE ROW LEVEL SECURITY;
 ALTER TABLE inventory       ENABLE ROW LEVEL SECURITY;
 ALTER TABLE enemy_templates ENABLE ROW LEVEL SECURITY;
+ALTER TABLE battle_results  ENABLE ROW LEVEL SECURITY;
 
 -- ======================= PART 2: STARTING DATA =======================
 
@@ -143,4 +156,4 @@ INSERT INTO enemy_templates (enemy_name, is_boss, is_final_boss, boss_floor, min
     ('Paulo, the Repo Keeper',      TRUE, FALSE, 10, 10, 380, 18, 12, 7, 260),
     ('Jeno, the Database Warden',   TRUE, FALSE, 15, 15, 440, 20, 14, 8, 380),
     ('Jancy, the Final Developer',  TRUE, TRUE,  20, 20, 520, 22, 16, 9, 600)
-ON CONFLICT (enemy_name) DO NOTHING;
+ON CONFLICT (enemy_name) DO NOTHING;

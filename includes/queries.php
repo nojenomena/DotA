@@ -219,3 +219,65 @@
             [$saveId, $unit["unit_name"], $unit["unit_class"], $unit["party_position"], $unit["max_hp"], $unit["current_hp"], $unit["attack"], $unit["defense"], $unit["speed"]]
         );
     }
+
+    // ---------- battle records ----------
+
+    // saves how a battle ended (score = xp gained)
+    function addBattleResult($saveId, $floor, $result, $rounds, $xpGained){
+        global $conn;
+
+        return pg_query_params($conn,
+            'INSERT INTO battle_results (save_id, floor, result, rounds, xp_gained) VALUES ($1, $2, $3, $4, $5)',
+            [$saveId, $floor, $result, $rounds, $xpGained]
+        );
+    }
+
+    // the last battles of an account, newest first, with the slot number
+    function getBattleResults($accountId, $limit){
+        global $conn;
+
+        $result = pg_query_params($conn,
+            'SELECT battle_results.*, save_slots.slot_number
+             FROM battle_results JOIN save_slots ON battle_results.save_id = save_slots.save_id
+             WHERE save_slots.account_id = $1
+             ORDER BY battle_results.finished_at DESC, battle_results.result_id DESC
+             LIMIT $2',
+            [$accountId, $limit]
+        );
+
+        $rows = [];
+        if(!$result){
+            return $rows;
+        }
+        while($row = pg_fetch_assoc($result)){
+            $rows[] = $row;
+        }
+        return $rows;
+    }
+
+    // totals for each save: battles, wins, losses, total score
+    function getSaveTotals($accountId){
+        global $conn;
+
+        $result = pg_query_params($conn,
+            'SELECT save_slots.slot_number, save_slots.highest_floor,
+                    COUNT(battle_results.result_id) AS battles,
+                    COUNT(*) FILTER (WHERE battle_results.result = \'won\') AS wins,
+                    COUNT(*) FILTER (WHERE battle_results.result = \'lost\') AS losses,
+                    COALESCE(SUM(battle_results.xp_gained), 0) AS total_score
+             FROM save_slots LEFT JOIN battle_results ON battle_results.save_id = save_slots.save_id
+             WHERE save_slots.account_id = $1
+             GROUP BY save_slots.save_id
+             ORDER BY save_slots.slot_number',
+            [$accountId]
+        );
+
+        $rows = [];
+        if(!$result){
+            return $rows;
+        }
+        while($row = pg_fetch_assoc($result)){
+            $rows[] = $row;
+        }
+        return $rows;
+    }
