@@ -16,10 +16,16 @@
         <h1 id="title">Defense of the Alphards</h1>
         <p id="subtitle">Climb the tower. Defeat the Developers.</p>
 
+        <?php if(isset($_GET["deleted"])){ ?>
+            <p style="color: yellow; margin-bottom: 20px;">Your account was deleted.</p>
+        <?php } ?>
+
         <?php if(isset($_SESSION["account_id"])){ ?>
             <p>Welcome, <b><?php echo htmlspecialchars($_SESSION["username"]); ?></b>!</p>
             <br>
             <button class="menu-button" onclick="window.location.href='saves.php'">Continue</button>
+            <br>
+            <button class="menu-button" onclick="window.location.href='account.php'">Account</button>
             <br>
             <button class="menu-button" onclick="window.location.href='logout.php'">Log Out</button>
         <?php } else { ?>

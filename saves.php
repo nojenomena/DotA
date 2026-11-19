@@ -9,6 +9,20 @@
         exit();
     }
 
+    // delete button
+    if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["delete_save"])){
+        $saveId = (int) $_POST["delete_save"];
+        deleteSave($saveId, $_SESSION["account_id"]);
+
+        // stop the battle too if it was from this save
+        if(isset($_SESSION["battle"]) && $_SESSION["battle"]["save_id"] == $saveId){
+            unset($_SESSION["battle"]);
+        }
+
+        header("Location: saves.php");
+        exit();
+    }
+
     $saves = getSaves($_SESSION["account_id"]);
 ?>
 
@@ -55,6 +69,11 @@
                         <button type="submit">Play</button>
                     </form>
                     <button onclick="window.location.href='party.php?save=<?php echo $save["save_id"]; ?>'">Party</button>
+
+                    <form method="POST" onsubmit="return confirm('Delete this save? Your party and items will be gone forever.');">
+                        <input type="hidden" name="delete_save" value="<?php echo $save["save_id"]; ?>">
+                        <button type="submit" class="delete-button">Delete Save</button>
+                    </form>
                 <?php } else { ?>
                     <p class="small-text" style="text-align: center; margin-top: 80px;">Empty</p>
                     <button onclick="window.location.href='new_save.php?slot=<?php echo $slot; ?>'" style="margin-top: 70px;">New Game</button>

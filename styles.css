@@ -296,3 +296,9 @@ a {
 #skill-list .command {
     margin-right: 2px;
 }
+
+/* delete buttons */
+.delete-button {
+    color: darkred;
+    font-weight: bold;
+}

@@ -21,7 +21,30 @@
 
     $party = getParty($saveId);
     $items = getInventory($saveId);
+
+    // find the empty roles. position 1 = warrior, 2 = mage, 3 = cleric (same order as starting_party)
+    // $emptyRoles looks like [2 => "mage"] if the mage was dismissed
+    $emptyRoles = [];
+    foreach($config["starting_party"] as $i => $class){
+        $position = $i + 1;
+        $taken = false;
+
+        foreach($party as $member){
+            if($member["party_position"] == $position){
+                $taken = true;
+            }
+        }
+
+        if(!$taken){
+            $emptyRoles[$position] = $class;
+        }
+    }
+    // message from the last action (like "Lyra left the party")
     $message = "";
+    if(isset($_SESSION["party_message"])){
+        $message = $_SESSION["party_message"];
+        unset($_SESSION["party_message"]);
+    }
 
     if($_SERVER["REQUEST_METHOD"] == "POST"){
         $action = isset($_POST["action"]) ? $_POST["action"] : "";
@@ -73,6 +96,28 @@
 
         } else if($action == "unequip" && $item){
             unequipItem($item["instance_id"], $saveId);
+
+        } else if($action == "discard" && $item){
+            deleteItem($item["instance_id"], $saveId);
+
+        } else if($action == "delete" && $unit){
+            deleteUnit($unit["unit_id"], $saveId);
+            $_SESSION["party_message"] = $unit["unit_name"] . " left the party. ";
+
+        } else if($action == "recruit"){
+            // a new Lv 1 for an empty role. the form only sends the position,
+            // the class comes from $emptyRoles so nobody can send a fake class
+            $position = isset($_POST["position"]) ? (int) $_POST["position"] : 0;
+            $newName = isset($_POST["new_name"]) ? trim($_POST["new_name"]) : "";
+
+            if(!isset($emptyRoles[$position])){
+                $_SESSION["party_message"] = "That spot is already taken.";
+            } else if(!preg_match("/^[A-Za-z0-9 ]+$/", $newName) || strlen($newName) > $config["unit_name_max"]){
+                $_SESSION["party_message"] = "The new name must be 1-" . $config["unit_name_max"] . " characters: letters, numbers and spaces.";
+            } else {
+                addUnit($saveId, createUnit($newName, $emptyRoles[$position], $position));
+                $_SESSION["party_message"] = $newName . " joined!";
+            }
         }
 
         // reload so refreshing the page doesn't do it again
@@ -96,6 +141,10 @@
             &nbsp;&nbsp; Floor <?php echo $save["current_floor"]; ?> / <?php echo $config["total_floors"]; ?>
             <a href="saves.php" style="float: right;">Back to saves</a>
         </div>
+
+        <?php if($message != ""){ ?>
+            <p style="color: yellow; margin-bottom: 10px;"><?php echo htmlspecialchars($message); ?></p>
+        <?php } ?>
 
         <?php foreach($party as $unit){ $withItems = applyEquipment($unit, $items); ?>
             <div class="save-box">
@@ -148,6 +197,30 @@
                         <br><?php echo $skill["name"]; ?> <?php if($unit["level"] < $skill["level"]){ echo "(Lv " . $skill["level"] . ")"; } ?>
                     <?php } ?>
                 </p>
+                <br>
+
+                <!-- dismiss: this spot becomes empty, recruit someone new after -->
+                <form method="POST" onsubmit="return confirm('Dismiss this party member? They will be gone forever.');">
+                    <input type="hidden" name="action" value="delete">
+                    <input type="hidden" name="unit_id" value="<?php echo $unit["unit_id"]; ?>">
+                    <button type="submit" class="small-button delete-button">Dismiss</button>
+                </form>
+            </div>
+        <?php } ?>
+
+        <!-- one box for every empty role -->
+        <?php foreach($emptyRoles as $position => $class){ ?>
+            <div class="save-box">
+                <h3>Empty <span class="small-text"><?php echo $config["classes"][$class]["label"]; ?></span></h3>
+                <p class="small-text">Recruit a new Lv 1 <?php echo $config["classes"][$class]["label"]; ?>.</p>
+                <br>
+
+                <form method="POST">
+                    <input type="hidden" name="action" value="recruit">
+                    <input type="hidden" name="position" value="<?php echo $position; ?>">
+                    <input type="text" name="new_name" placeholder="Name" maxlength="<?php echo $config["unit_name_max"]; ?>" required style="width: 55%;">
+                    <button type="submit" class="small-button">Recruit</button>
+                </form>
             </div>
         <?php } ?>
 
@@ -197,6 +270,11 @@
                                     <?php } ?>
                                 </select>
                                 <button type="submit" class="small-button"><?php echo $item["equipped_by"] ? "Move" : "Equip"; ?></button>
+                            </form>
+                            <form method="POST" onsubmit="return confirm('Throw away this item? It will be gone forever.');">
+                                <input type="hidden" name="action" value="discard">
+                                <input type="hidden" name="instance_id" value="<?php echo $item["instance_id"]; ?>">
+                                <button type="submit" class="small-button delete-button">Throw away</button>
                             </form>
                         </td>
                     </tr>

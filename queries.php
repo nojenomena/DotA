@@ -178,3 +178,44 @@
 
         return pg_query_params($conn, 'UPDATE inventory SET equipped_by = NULL WHERE instance_id = $1 AND save_id = $2', [$instanceId, $saveId]);
     }
+
+    // ---------- delete ----------
+
+    // deletes a save. its party and items are deleted too (ON DELETE CASCADE in schema.sql)
+    function deleteSave($saveId, $accountId){
+        global $conn;
+
+        return pg_query_params($conn, 'DELETE FROM save_slots WHERE save_id = $1 AND account_id = $2', [$saveId, $accountId]);
+    }
+
+    // throws away an item
+    function deleteItem($instanceId, $saveId){
+        global $conn;
+
+        return pg_query_params($conn, 'DELETE FROM inventory WHERE instance_id = $1 AND save_id = $2', [$instanceId, $saveId]);
+    }
+
+    // removes a party member. items they had on go back to the bag (ON DELETE SET NULL)
+    function deleteUnit($unitId, $saveId){
+        global $conn;
+
+        return pg_query_params($conn, 'DELETE FROM party_units WHERE unit_id = $1 AND save_id = $2', [$unitId, $saveId]);
+    }
+
+    // deletes the account and everything in it (saves, party, items)
+    function deleteAccount($accountId){
+        global $conn;
+
+        return pg_query_params($conn, 'DELETE FROM accounts WHERE account_id = $1', [$accountId]);
+    }
+
+    // adds one new party member to a save
+    function addUnit($saveId, $unit){
+        global $conn;
+
+        return pg_query_params($conn,
+            'INSERT INTO party_units (save_id, unit_name, unit_class, party_position, max_hp, current_hp, attack, defense, speed)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)',
+            [$saveId, $unit["unit_name"], $unit["unit_class"], $unit["party_position"], $unit["max_hp"], $unit["current_hp"], $unit["attack"], $unit["defense"], $unit["speed"]]
+        );
+    }
