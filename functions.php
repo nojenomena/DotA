@@ -356,3 +356,34 @@
 
         return [$fighter, $lines, $stunned];
     }
+
+    // after a loss: a bit of xp so you get stronger by trying again (no item, same floor)
+    // needs db.php and queries.php. returns the lines for the battle log
+    function giveLossXp($battle){
+        global $config;
+
+        $xp = 0;
+        foreach($battle["enemies"] as $enemy){
+            $xp = $xp + $enemy["xp_reward"];
+        }
+        $xp = (int) round($xp * $config["xp_on_loss"] / 100);
+
+        $lines = [];
+        $lines[] = "Your party learned something from that fight: +" . $xp . " XP.";
+
+        foreach(getParty($battle["save_id"]) as $unit){
+            $unit = addXp($unit, $xp);
+
+            if($config["heal_after_battle"]){
+                $unit["current_hp"] = $unit["max_hp"];
+            }
+
+            updateUnit($unit);
+
+            if($unit["levels_gained"] > 0){
+                $lines[] = $unit["unit_name"] . " reached Lv " . $unit["level"] . "! (+" . ($unit["levels_gained"] * $config["points_per_level"]) . " upgrade points)";
+            }
+        }
+
+        return $lines;
+    }

@@ -13,7 +13,6 @@
     $battle = $_SESSION["battle"];
     $newLog = [];
 
-    // a battle started before week 5 has no status list for the party
     if(!isset($battle["party"][0]["status"])){
         echo json_encode(["error" => "This battle is from an older version. Go back to your saves and press Play."]);
         exit();
@@ -292,6 +291,14 @@
         if($battle["floor"] >= $config["total_floors"]){
             $battle["cleared"] = true;
         }
+    }
+
+    // a loss still saves some xp (running away gives nothing)
+    if($battle["result"] == "lost"){
+        include("db.php");
+        include("queries.php");
+
+        $newLog = array_merge($newLog, giveLossXp($battle));
     }
 
     // keep only the last lines so the session doesn't get too big

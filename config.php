@@ -51,6 +51,9 @@
         // PLACEHOLDER: party heals to full after every battle
         "heal_after_battle" => true,
 
+        // losing still gives this % of the battle's xp, so retrying a boss makes you a bit stronger
+        "xp_on_loss" => 25,
+
         // skills: level = level needed, power = damage x attack (0 = no damage),
         // cooldown = ROUNDS before it can be used again
         // target: "enemy", "all_enemies", "ally" or "all_allies"
