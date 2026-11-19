@@ -114,20 +114,30 @@
             <!-- battle.js puts the skill buttons here -->
             <div id="skill-list" style="display: none;"></div>
 
-            <!-- PLACEHOLDER: real victory / game over screen later -->
-            <div id="battle-over" style="display: none;">
-                <form method="POST" action="battle.php" id="continue-form" style="display: inline;">
-                    <input type="hidden" name="save_id" value="<?php echo $battle["save_id"]; ?>">
-                    <button type="submit" id="continue-button">Next Floor</button>
-                </form>
-                <a href="party.php?save=<?php echo $battle["save_id"]; ?>">Party</a> |
-                <a href="saves.php">Back to saves</a>
-            </div>
-
             <p class="hint" style="margin-top: 8px;">WASD / Arrows = move, Enter / Space = choose, Esc = back</p>
         </div>
 
         <div class="clear"></div>
+    </div>
+
+    <!-- big box in the middle: floor intro, victory, game over (battle.js shows it) -->
+    <div id="popup" style="display: none;">
+        <div id="popup-box">
+            <h1 id="popup-title"></h1>
+            <div id="popup-text"></div>
+
+            <div id="popup-buttons" style="display: none;">
+                <form method="POST" action="battle.php" id="continue-form" style="display: inline;">
+                    <input type="hidden" name="save_id" value="<?php echo $battle["save_id"]; ?>">
+                    <button type="submit" id="continue-button">Next Floor</button>
+                </form>
+                <button onclick="window.location.href='party.php?save=<?php echo $battle["save_id"]; ?>'">Party</button>
+                <button onclick="window.location.href='records.php'">Records</button>
+                <button onclick="window.location.href='saves.php'">Back to saves</button>
+            </div>
+
+            <p class="hint" id="popup-hint"></p>
+        </div>
     </div>
 
     <script>

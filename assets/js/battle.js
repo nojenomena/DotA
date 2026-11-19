@@ -5,6 +5,7 @@ let mode = "menu";       // "menu", "skills", "target", "ally", "wait" or "over"
 let target = 0;          // which enemy (or party member for heals) is picked
 let skillSelected = 0;   // which skill in the skill list
 let usingSkill = -1;     // the skill being aimed, -1 = normal attack
+let popupShown = false;  // the victory / game over box is already showing
 
 const commands = ["attack", "skill", "item", "run"];
 
@@ -135,26 +136,13 @@ function updateScreen() {
 
     if (mode == "over") {
         document.getElementById("menu").style.display = "none";
-        document.getElementById("battle-over").style.display = "block";
+        message.innerText = "The battle is over.";
 
-        const button = document.getElementById("continue-button");
-
-        if (battle.result == "won") {
-            message.innerText = "Victory!";
-            button.innerText = "Next Floor";
-        } else if (battle.result == "lost") {
-            message.innerText = "Defeat...";
-            button.innerText = "Try Again";
-        } else {
-            message.innerText = "You escaped.";
-            button.innerText = "Try Again";
+        if (!popupShown) {
+            showEndPopup();
         }
-
-        // nothing left to climb
-        if (battle.cleared) {
-            message.innerText = "You cleared the tower!";
-            document.getElementById("continue-form").style.display = "none";
-        }
+    } else if (mode == "intro") {
+        message.innerText = "...";
     } else if (mode == "skills") {
         message.innerText = "Which skill? (Esc to go back)";
     } else if (mode == "target" && usingSkill >= 0) {
@@ -392,6 +380,9 @@ document.addEventListener("keydown", function (event) {
             mode = usingSkill >= 0 ? "skills" : "menu";
             usingSkill = -1;
         }
+    } else if (mode == "intro" && enter) {
+        closeIntro();
+        return;
     } else if (mode == "over" && enter) {
         if (battle.cleared) {
             window.location.href = "saves.php";
@@ -404,6 +395,99 @@ document.addEventListener("keydown", function (event) {
     updateScreen();
 });
 
+// ---------- big box in the middle (floor intro, victory, game over) ----------
+
+function showPopup(title, lines, withButtons, hint) {
+    document.getElementById("popup-title").innerText = title;
+
+    const text = document.getElementById("popup-text");
+    text.innerHTML = "";
+    for (let i = 0; i < lines.length; i++) {
+        const line = document.createElement("p");
+        line.innerText = lines[i];
+        text.appendChild(line);
+    }
+
+    document.getElementById("popup-buttons").style.display = withButtons ? "block" : "none";
+    document.getElementById("popup-hint").innerText = hint;
+    document.getElementById("popup").style.display = "block";
+}
+
+function hidePopup() {
+    document.getElementById("popup").style.display = "none";
+}
+
+// "Floor 5" box when a battle starts
+function showIntro() {
+    const names = [];
+    let boss = "";
+
+    for (let i = 0; i < battle.enemies.length; i++) {
+        names.push(battle.enemies[i].name);
+        if (battle.enemies[i].is_boss) {
+            boss = battle.enemies[i].name;
+        }
+    }
+
+    let lines = [];
+    if (boss != "") {
+        lines = ["BOSS: " + boss];
+    } else {
+        lines = ["Enemies: " + names.join(", ")];
+    }
+
+    mode = "intro";
+    updateScreen();
+    showPopup("Floor " + battle.floor, lines, false, "Press Enter to start");
+
+    // closes by itself after a bit
+    setTimeout(closeIntro, 2500);
+}
+
+function closeIntro() {
+    if (mode == "intro") {
+        hidePopup();
+        mode = "menu";
+        updateScreen();
+    }
+}
+
+// victory / game over / escaped / tower cleared
+function showEndPopup() {
+    popupShown = true;
+
+    // the reward lines are in the log, after "Victory!" or "Your party has fallen"
+    let start = battle.log.length;
+    for (let i = 0; i < battle.log.length; i++) {
+        if (battle.log[i].startsWith("Victory!") || battle.log[i].startsWith("Your party has fallen")) {
+            start = i + 1;
+        }
+    }
+    const lines = battle.log.slice(start);
+
+    const button = document.getElementById("continue-button");
+    document.getElementById("continue-form").style.display = "inline";
+
+    if (battle.cleared) {
+        showPopup("Tower Cleared!", ["You beat the Final Developer!"].concat(lines), true, "Thanks for playing!");
+        document.getElementById("continue-form").style.display = "none";
+    } else if (battle.result == "won") {
+        button.innerText = "Next Floor";
+        showPopup("Victory!", lines, true, "Enter = Next Floor");
+    } else if (battle.result == "lost") {
+        button.innerText = "Try Again";
+        showPopup("Game Over", ["Your party has fallen on floor " + battle.floor + "."].concat(lines), true, "Enter = Try Again");
+    } else {
+        button.innerText = "Try Again";
+        showPopup("You Escaped", ["You ran away from floor " + battle.floor + "."], true, "Enter = Try Again");
+    }
+}
+
 // start
 updateScreen();
+
+// a brand new battle starts with the floor intro
+if (battle.result == "" && battle.round == 1 && battle.turn == 0 && battle.log.length == 1) {
+    showIntro();
+}
 document.getElementById("battle-log").scrollTop = document.getElementById("battle-log").scrollHeight;
