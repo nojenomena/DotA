@@ -94,6 +94,24 @@
         "run_chance"       => 75,    // percent, can't run from bosses
         "log_max_lines"    => 50,
 
+        // PLACEHOLDER: one skill per enemy (by enemy_name in the database)
+        // chance = % chance to use it instead of a normal attack, power = damage x attack
+        // target: "one" or "all" (whole party). effect: "burn", "poison", "stun" or ""
+        // bosses always go after the party member with the lowest hp, others pick someone random
+        "enemy_skills" => [
+            "Bug"            => ["name" => "Poison Bite",  "chance" => 20, "power" => 0.8, "target" => "one", "effect" => "poison"],
+            "Glitch Slime"   => ["name" => "Sticky Goo",   "chance" => 15, "power" => 0.6, "target" => "one", "effect" => "stun"],
+            "Null Pointer"   => ["name" => "Crash",        "chance" => 20, "power" => 1.5, "target" => "one", "effect" => ""],
+            "Memory Leak"    => ["name" => "Drain",        "chance" => 25, "power" => 0.5, "target" => "all", "effect" => ""],
+            "Infinite Loop"  => ["name" => "Overheat",     "chance" => 20, "power" => 1.0, "target" => "one", "effect" => "burn"],
+            "Merge Conflict" => ["name" => "Rebase",       "chance" => 25, "power" => 0.5, "target" => "all", "effect" => ""],
+
+            "Stefan, the Architect"      => ["name" => "Blueprint Crush", "chance" => 25, "power" => 0.6, "target" => "all", "effect" => ""],
+            "Paulo, the Repo Keeper"     => ["name" => "Force Push",      "chance" => 20, "power" => 1.2, "target" => "one", "effect" => "stun"],
+            "Jeno, the Database Warden"  => ["name" => "Drop Table",      "chance" => 25, "power" => 0.5, "target" => "all", "effect" => "poison"],
+            "Jancy, the Final Developer" => ["name" => "Hotfix Storm",    "chance" => 20, "power" => 0.5, "target" => "all", "effect" => "burn"],
+        ],
+
         // drops after a win (percent)
         "drop_chance"      => 60,
         "boss_drop_chance" => 100,

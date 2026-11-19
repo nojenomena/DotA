@@ -37,6 +37,7 @@
 
         return [
             "name"       => $row["enemy_name"],
+            "type"       => $row["enemy_name"],    // name stays the same even when it becomes "Bug 2"
             "is_boss"    => $row["is_boss"] == "t",    // postgres gives "t" or "f"
             "max_hp"     => $hp,
             "current_hp" => $hp,
@@ -138,6 +139,7 @@
         foreach($party as $i => $unit){
             // battles start at full hp (the party heals after every battle)
             $party[$i]["current_hp"] = $unit["max_hp"];
+            $party[$i]["status"] = [];
 
             // one cooldown per skill, 0 = ready
             $party[$i]["cooldowns"] = [];
@@ -303,4 +305,54 @@
         updateSaveProgress($saveId, $nextFloor, max($nextFloor, $save["highest_floor"]), $cleared);
 
         return $lines;
+    }
+
+    // bosses go after the party member with the lowest hp, other enemies pick someone random
+    function pickTarget($party, $isBoss){
+        $alive = getTurnOrder($party);
+
+        if(!$isBoss){
+            return $alive[array_rand($alive)];
+        }
+
+        $target = $alive[0];
+        foreach($alive as $i){
+            if($party[$i]["current_hp"] < $party[$target]["current_hp"]){
+                $target = $i;
+            }
+        }
+        return $target;
+    }
+
+    // burn, poison and stun at the start of someone's turn (party member or enemy)
+    // returns [the fighter after damage, the log lines, true if stunned]
+    function tickStatus($fighter, $name){
+        global $config;
+
+        $lines = [];
+        $stunned = false;
+
+        foreach($fighter["status"] as $effect => $turns){
+            $damagePercent = $config["status_effects"][$effect]["damage"];
+
+            if($damagePercent > 0){
+                $damage = max(1, (int) round($fighter["max_hp"] * $damagePercent / 100));
+                $fighter["current_hp"] = max(0, $fighter["current_hp"] - $damage);
+                $lines[] = $name . " takes " . $damage . " " . $effect . " damage!";
+            }
+
+            if($effect == "stun"){
+                $stunned = true;
+                $lines[] = $name . " is stunned and can't move!";
+            }
+
+            // one turn less, gone at 0
+            if($turns <= 1){
+                unset($fighter["status"][$effect]);
+            } else {
+                $fighter["status"][$effect] = $turns - 1;
+            }
+        }
+
+        return [$fighter, $lines, $stunned];
     }

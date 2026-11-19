@@ -13,6 +13,12 @@
     $battle = $_SESSION["battle"];
     $newLog = [];
 
+    // a battle started before week 5 has no status list for the party
+    if(!isset($battle["party"][0]["status"])){
+        echo json_encode(["error" => "This battle is from an older version. Go back to your saves and press Play."]);
+        exit();
+    }
+
     $input = json_decode(file_get_contents("php://input"), true);
     $command = isset($input["command"]) ? $input["command"] : "";
     $target = isset($input["target"]) ? (int) $input["target"] : -1;
@@ -153,87 +159,126 @@
     // next party member's turn. if everyone went, the enemies attack
     if($battle["result"] == ""){
         $battle["turn"]++;
+    }
 
+    // this loop keeps going while someone has to be skipped (stunned or knocked out by poison)
+    $safety = 0;
+    while($battle["result"] == "" && $safety < 20){
+        $safety++;
+
+        // ---------- enemy phase: everyone in the party has gone ----------
         if($battle["turn"] >= count($battle["order"])){
-            // PLACEHOLDER: enemies just attack someone random (smarter enemies later)
             foreach(getTurnOrder($battle["enemies"]) as $e){
+                // burn, poison and stun first
+                list($battle["enemies"][$e], $lines, $stunned) = tickStatus($battle["enemies"][$e], $battle["enemies"][$e]["name"]);
+                $newLog = array_merge($newLog, $lines);
+
                 $enemy = $battle["enemies"][$e];
 
-                // burn, poison and stun happen first
-                $stunned = false;
-                foreach($enemy["status"] as $name => $turns){
-                    $effect = $config["status_effects"][$name];
-
-                    if($effect["damage"] > 0){
-                        $damage = max(1, (int) round($enemy["max_hp"] * $effect["damage"] / 100));
-                        $battle["enemies"][$e]["current_hp"] = max(0, $battle["enemies"][$e]["current_hp"] - $damage);
-                        $newLog[] = $enemy["name"] . " takes " . $damage . " " . $name . " damage!";
-                    }
-
-                    if($name == "stun"){
-                        $stunned = true;
-                        $newLog[] = $enemy["name"] . " is stunned and can't move!";
-                    }
-
-                    if($turns <= 1){
-                        unset($battle["enemies"][$e]["status"][$name]);
-                    } else {
-                        $battle["enemies"][$e]["status"][$name] = $turns - 1;
-                    }
-                }
-
-                if($battle["enemies"][$e]["current_hp"] == 0){
+                if($enemy["current_hp"] == 0){
                     $newLog[] = $enemy["name"] . " is defeated!";
                     continue;
                 }
                 if($stunned){
                     continue;
                 }
-
-                $alive = getTurnOrder($battle["party"]);
-                if(count($alive) == 0){
+                if(allDown($battle["party"])){
                     break;
                 }
 
-                $t = $alive[array_rand($alive)];
-                $victim = $battle["party"][$t];
+                // use its skill sometimes, otherwise a normal attack
+                $skill = isset($config["enemy_skills"][$enemy["type"]]) ? $config["enemy_skills"][$enemy["type"]] : false;
 
-                list($damage, $isCrit) = getDamage($enemy["attack"], $victim["defense"]);
-                $battle["party"][$t]["current_hp"] = max(0, $victim["current_hp"] - $damage);
+                if($skill && rand(1, 100) <= $skill["chance"]){
+                    $newLog[] = $enemy["name"] . " uses " . $skill["name"] . "!";
 
-                $line = $enemy["name"] . " attacks " . $victim["unit_name"] . " for " . $damage . " damage!";
-                if($isCrit){
-                    $line = $line . " Critical hit!";
+                    if($skill["target"] == "all"){
+                        $targets = getTurnOrder($battle["party"]);
+                    } else {
+                        $targets = [pickTarget($battle["party"], $enemy["is_boss"])];
+                    }
+                    $power = $skill["power"];
+                } else {
+                    $skill = false;
+                    $targets = [pickTarget($battle["party"], $enemy["is_boss"])];
+                    $power = 1;
                 }
-                $newLog[] = $line;
 
-                if($battle["party"][$t]["current_hp"] == 0){
-                    $newLog[] = $victim["unit_name"] . " is knocked out!";
+                foreach($targets as $t){
+                    $victim = $battle["party"][$t];
+
+                    list($damage, $isCrit) = getDamage((int) round($enemy["attack"] * $power), $victim["defense"]);
+                    $battle["party"][$t]["current_hp"] = max(0, $victim["current_hp"] - $damage);
+
+                    if($skill){
+                        $line = $victim["unit_name"] . " takes " . $damage . " damage!";
+                    } else {
+                        $line = $enemy["name"] . " attacks " . $victim["unit_name"] . " for " . $damage . " damage!";
+                    }
+                    if($isCrit){
+                        $line = $line . " Critical hit!";
+                    }
+                    $newLog[] = $line;
+
+                    if($battle["party"][$t]["current_hp"] == 0){
+                        $newLog[] = $victim["unit_name"] . " is knocked out!";
+                    } else if($skill && $skill["effect"] != ""){
+                        $effect = $config["status_effects"][$skill["effect"]];
+                        $battle["party"][$t]["status"][$skill["effect"]] = $effect["turns"];
+                        $newLog[] = $victim["unit_name"] . " " . $effect["text"];
+                    }
                 }
             }
 
             if(allDown($battle["enemies"])){
                 $battle["result"] = "won";
-            } else if(allDown($battle["party"])){
+                break;
+            }
+            if(allDown($battle["party"])){
                 $battle["result"] = "lost";
                 $newLog[] = "Your party has fallen... Try this floor again.";
-            } else {
-                // new round, skills cool down by 1
-                $battle["round"]++;
-                $battle["order"] = getTurnOrder($battle["party"]);
-                $battle["turn"] = 0;
+                break;
+            }
 
-                foreach($battle["party"] as $i => $member){
-                    foreach($member["cooldowns"] as $c => $rounds){
-                        if($rounds > 0){
-                            $battle["party"][$i]["cooldowns"][$c] = $rounds - 1;
-                        }
+            // new round, skills cool down by 1
+            $battle["round"]++;
+            $battle["order"] = getTurnOrder($battle["party"]);
+            $battle["turn"] = 0;
+
+            foreach($battle["party"] as $i => $member){
+                foreach($member["cooldowns"] as $c => $rounds){
+                    if($rounds > 0){
+                        $battle["party"][$i]["cooldowns"][$c] = $rounds - 1;
                     }
                 }
+            }
 
-                $newLog[] = "- Round " . $battle["round"] . " -";
+            $newLog[] = "- Round " . $battle["round"] . " -";
+        }
+
+        // ---------- start of a party member's turn: burn, poison and stun ----------
+        $p = $battle["order"][$battle["turn"]];
+        list($battle["party"][$p], $lines, $stunned) = tickStatus($battle["party"][$p], $battle["party"][$p]["unit_name"]);
+        $newLog = array_merge($newLog, $lines);
+
+        if($battle["party"][$p]["current_hp"] == 0){
+            $newLog[] = $battle["party"][$p]["unit_name"] . " is knocked out!";
+
+            if(allDown($battle["party"])){
+                $battle["result"] = "lost";
+                $newLog[] = "Your party has fallen... Try this floor again.";
+                break;
             }
         }
+
+        // can't act: go to the next one
+        if($battle["party"][$p]["current_hp"] == 0 || $stunned){
+            $battle["turn"]++;
+            continue;
+        }
+
+        // this party member can act, wait for the player
+        break;
     }
 
     // a win saves xp, levels, the drop and the next floor to the database

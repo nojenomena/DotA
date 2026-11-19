@@ -74,6 +74,7 @@
                     <span class="small-text"><?php echo $config["classes"][$unit["unit_class"]]["label"]; ?></span>
                     <div class="hp-bar-back"><div class="hp-bar" id="party-bar-<?php echo $i; ?>"></div></div>
                     <span class="hp-text" id="party-hp-<?php echo $i; ?>"></span>
+                    <span class="small-text" id="party-status-<?php echo $i; ?>"></span>
                 </div>
             <?php } ?>
         </div>

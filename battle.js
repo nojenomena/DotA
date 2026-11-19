@@ -71,6 +71,7 @@ function updateScreen() {
         const box = document.getElementById("party-" + i);
 
         document.getElementById("party-hp-" + i).innerText = "HP " + unit.current_hp + " / " + unit.max_hp;
+        document.getElementById("party-status-" + i).innerText = Object.keys(unit.status).join(", ");
         setBar("party-bar-" + i, unit);
 
         box.className = "slot";
