@@ -302,3 +302,24 @@ a {
     color: darkred;
     font-weight: bold;
 }
+
+/* menu on top (includes/nav.php) */
+#nav {
+    padding: 8px 15px;
+    background-color: #2b2929;
+    border-bottom: 2px solid gray;
+}
+
+#nav a {
+    margin-right: 15px;
+}
+
+/* bottom of every page (includes/footer.php) */
+#footer {
+    clear: both;
+    margin-top: 40px;
+    padding: 15px;
+    text-align: center;
+    font-size: 12px;
+    color: gray;
+}

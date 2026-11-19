@@ -1,9 +1,9 @@
 <?php
     session_start();
-    include("config.php");
-    include("db.php");
-    include("queries.php");
-    include("functions.php");
+    include("includes/config.php");
+    include("includes/db.php");
+    include("includes/queries.php");
+    include("includes/functions.php");
 
     if(!isset($_SESSION["account_id"])){
         header("Location: login.php");
@@ -46,15 +46,11 @@
     }
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>New Game</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
+<?php
+    $pageTitle = "New Game";
+    include("includes/header.php");
+    include("includes/nav.php");
+?>
     <div class="form-box" style="width: 420px;">
         <h2>New Game - Slot <?php echo $slot; ?></h2>
         <p class="hint" style="text-align: center; margin-bottom: 15px;">Name your party.</p>
@@ -77,5 +73,4 @@
 
         <p class="form-links"><a href="saves.php">Back</a></p>
     </div>
-</body>
-</html>
+<?php include("includes/footer.php"); ?>

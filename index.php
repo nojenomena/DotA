@@ -2,15 +2,11 @@
     session_start();
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Defense of the Alphards</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
+<?php
+    $pageTitle = "Defense of the Alphards";
+    include("includes/header.php");
+    include("includes/nav.php");
+?>
     <div id="container" style="text-align: center;">
         <!-- PLACEHOLDER: logo picture (paulo) -->
         <h1 id="title">Defense of the Alphards</h1>
@@ -34,5 +30,4 @@
             <button class="menu-button" onclick="window.location.href='signup.php'">Sign Up</button>
         <?php } ?>
     </div>
-</body>
-</html>
+<?php include("includes/footer.php"); ?>

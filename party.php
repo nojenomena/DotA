@@ -1,9 +1,9 @@
 <?php
     session_start();
-    include("config.php");
-    include("db.php");
-    include("queries.php");
-    include("functions.php");
+    include("includes/config.php");
+    include("includes/db.php");
+    include("includes/queries.php");
+    include("includes/functions.php");
 
     if(!isset($_SESSION["account_id"])){
         header("Location: login.php");
@@ -126,15 +126,11 @@
     }
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Party</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
+<?php
+    $pageTitle = "Party";
+    include("includes/header.php");
+    include("includes/nav.php");
+?>
     <div id="container">
         <div id="top-bar">
             <h2>Party - Slot <?php echo $save["slot_number"]; ?></h2>
@@ -282,5 +278,4 @@
             </table>
         <?php } ?>
     </div>
-</body>
-</html>
+<?php include("includes/footer.php"); ?>

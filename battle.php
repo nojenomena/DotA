@@ -1,7 +1,7 @@
 <?php
     session_start();
-    include("config.php");
-    include("functions.php");
+    include("includes/config.php");
+    include("includes/functions.php");
 
     if(!isset($_SESSION["account_id"])){
         header("Location: login.php");
@@ -9,8 +9,8 @@
     }
 
     if(isset($_POST["save_id"])){
-        include("db.php");
-        include("queries.php");
+        include("includes/db.php");
+        include("includes/queries.php");
 
         $save = getSave((int) $_POST["save_id"], $_SESSION["account_id"]);
 
@@ -46,15 +46,11 @@
     $battle = $_SESSION["battle"];
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Battle - Floor <?php echo $battle["floor"]; ?></title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
+<?php
+    $pageTitle = "Battle - Floor " . $battle["floor"];
+    include("includes/header.php");
+    include("includes/nav.php");
+?>
     <div id="container">
 
         <div id="top-bar">
@@ -139,6 +135,5 @@
         let battle = <?php echo json_encode($battle, JSON_HEX_TAG | JSON_HEX_AMP); ?>;
         let skills = <?php echo json_encode($config["skills"], JSON_HEX_TAG | JSON_HEX_AMP); ?>;
     </script>
-    <script src="battle.js"></script>
-</body>
-</html>
+    <script src="assets/js/battle.js"></script>
+<?php include("includes/footer.php"); ?>

@@ -1,7 +1,7 @@
 <?php
     session_start();
-    include("config.php");
-    include("functions.php");
+    include("includes/config.php");
+    include("includes/functions.php");
 
     header("Content-Type: application/json");
 
@@ -282,8 +282,8 @@
 
     // a win saves xp, levels, the drop and the next floor to the database
     if($battle["result"] == "won"){
-        include("db.php");
-        include("queries.php");
+        include("includes/db.php");
+        include("includes/queries.php");
 
         $newLog[] = "Victory! All enemies were defeated.";
         $newLog = array_merge($newLog, giveRewards($battle));
@@ -295,8 +295,8 @@
 
     // a loss still saves some xp (running away gives nothing)
     if($battle["result"] == "lost"){
-        include("db.php");
-        include("queries.php");
+        include("includes/db.php");
+        include("includes/queries.php");
 
         $newLog = array_merge($newLog, giveLossXp($battle));
     }

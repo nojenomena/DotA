@@ -1,8 +1,8 @@
 <?php
     session_start();
-    include("config.php");
-    include("db.php");
-    include("queries.php");
+    include("includes/config.php");
+    include("includes/db.php");
+    include("includes/queries.php");
 
     if(isset($_SESSION["account_id"])){
         header("Location: index.php");
@@ -30,15 +30,11 @@
     }
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Log In</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
+<?php
+    $pageTitle = "Log In";
+    include("includes/header.php");
+    include("includes/nav.php");
+?>
     <div class="form-box">
         <h2>Log In</h2>
 
@@ -59,5 +55,4 @@
         <p class="form-links">No account yet? <a href="signup.php">Sign up</a></p>
         <p class="form-links"><a href="index.php">Back</a></p>
     </div>
-</body>
-</html>
+<?php include("includes/footer.php"); ?>
