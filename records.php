@@ -1,13 +1,11 @@
 <?php
     session_start();
     include("includes/config.php");
+    include("includes/auth.php");
     include("includes/db.php");
     include("includes/queries.php");
 
-    if(!isset($_SESSION["account_id"])){
-        header("Location: login.php");
-        exit();
-    }
+    requireLogin();
 
     $totals = getSaveTotals($_SESSION["account_id"]);
     $battles = getBattleResults($_SESSION["account_id"], 30);

@@ -1,14 +1,12 @@
 <?php
     session_start();
     include("includes/config.php");
+    include("includes/auth.php");
     include("includes/db.php");
     include("includes/queries.php");
     include("includes/functions.php");
 
-    if(!isset($_SESSION["account_id"])){
-        header("Location: login.php");
-        exit();
-    }
+    requireLogin();
 
     $saveId = isset($_GET["save"]) ? (int) $_GET["save"] : 0;
     $save = getSave($saveId, $_SESSION["account_id"]);

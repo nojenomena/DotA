@@ -281,3 +281,211 @@
         }
         return $rows;
     }
+
+    // ---------- admin ----------
+
+    // numbers for the admin dashboard
+    function getAdminCounts(){
+        global $conn;
+
+        $result = pg_query($conn,
+            'SELECT (SELECT COUNT(*) FROM accounts) AS players,
+                    (SELECT COUNT(*) FROM accounts WHERE role = \'admin\') AS admins,
+                    (SELECT COUNT(*) FROM save_slots) AS saves,
+                    (SELECT COUNT(*) FROM save_slots WHERE is_cleared) AS cleared,
+                    (SELECT COUNT(*) FROM battle_results) AS battles,
+                    (SELECT COUNT(*) FROM battle_results WHERE result = \'won\') AS wins,
+                    (SELECT COUNT(*) FROM battle_results WHERE result = \'lost\') AS losses,
+                    (SELECT COUNT(*) FROM enemy_templates) AS enemies,
+                    (SELECT COUNT(*) FROM item_templates) AS items'
+        );
+
+        if(!$result){
+            return false;
+        }
+        return pg_fetch_assoc($result);
+    }
+
+    // ---------- admin: users ----------
+
+    // every account with how many saves and battles it has
+    function getAllAccounts(){
+        global $conn;
+
+        $result = pg_query($conn,
+            'SELECT accounts.account_id, accounts.username, accounts.role, accounts.created_at,
+                    COUNT(DISTINCT save_slots.save_id) AS saves,
+                    COUNT(battle_results.result_id) AS battles
+             FROM accounts
+             LEFT JOIN save_slots ON save_slots.account_id = accounts.account_id
+             LEFT JOIN battle_results ON battle_results.save_id = save_slots.save_id
+             GROUP BY accounts.account_id
+             ORDER BY accounts.account_id'
+        );
+
+        $accounts = [];
+        if(!$result){
+            return $accounts;
+        }
+        while($row = pg_fetch_assoc($result)){
+            $accounts[] = $row;
+        }
+        return $accounts;
+    }
+
+    function setRole($accountId, $role){
+        global $conn;
+
+        return pg_query_params($conn, 'UPDATE accounts SET role = $1 WHERE account_id = $2', [$role, $accountId]);
+    }
+
+    // ---------- admin: enemies ----------
+
+    function getEnemy($enemyId){
+        global $conn;
+
+        $result = pg_query_params($conn, 'SELECT * FROM enemy_templates WHERE enemy_id = $1', [$enemyId]);
+
+        if(!$result){
+            return false;
+        }
+        return pg_fetch_assoc($result);
+    }
+
+    // true if another enemy already has this name
+    function enemyNameTaken($name, $enemyId){
+        global $conn;
+
+        $result = pg_query_params($conn, 'SELECT enemy_id FROM enemy_templates WHERE LOWER(enemy_name) = LOWER($1) AND enemy_id <> $2', [$name, $enemyId]);
+
+        return $result && pg_num_rows($result) > 0;
+    }
+
+    // true if another boss already guards this floor
+    function bossFloorTaken($floor, $enemyId){
+        global $conn;
+
+        $result = pg_query_params($conn, 'SELECT enemy_id FROM enemy_templates WHERE is_boss AND boss_floor = $1 AND enemy_id <> $2', [$floor, $enemyId]);
+
+        return $result && pg_num_rows($result) > 0;
+    }
+
+    // how many regular enemies can show up on floor 1 (the game needs at least one)
+    function countFloorOneEnemies(){
+        global $conn;
+
+        $result = pg_query($conn, 'SELECT COUNT(*) FROM enemy_templates WHERE NOT is_boss AND min_floor = 1');
+
+        if(!$result){
+            return 0;
+        }
+        return (int) pg_fetch_result($result, 0, 0);
+    }
+
+    function addEnemy($e){
+        global $conn;
+
+        return pg_query_params($conn,
+            'INSERT INTO enemy_templates (enemy_name, is_boss, is_final_boss, boss_floor, min_floor, base_hp, base_attack, base_defense, base_speed, xp_reward)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)',
+            [$e["enemy_name"], $e["is_boss"], $e["is_final_boss"], $e["boss_floor"], $e["min_floor"], $e["base_hp"], $e["base_attack"], $e["base_defense"], $e["base_speed"], $e["xp_reward"]]
+        );
+    }
+
+    function updateEnemy($enemyId, $e){
+        global $conn;
+
+        return pg_query_params($conn,
+            'UPDATE enemy_templates SET enemy_name = $1, is_boss = $2, is_final_boss = $3, boss_floor = $4, min_floor = $5,
+                    base_hp = $6, base_attack = $7, base_defense = $8, base_speed = $9, xp_reward = $10
+             WHERE enemy_id = $11',
+            [$e["enemy_name"], $e["is_boss"], $e["is_final_boss"], $e["boss_floor"], $e["min_floor"], $e["base_hp"], $e["base_attack"], $e["base_defense"], $e["base_speed"], $e["xp_reward"], $enemyId]
+        );
+    }
+
+    function deleteEnemy($enemyId){
+        global $conn;
+
+        return pg_query_params($conn, 'DELETE FROM enemy_templates WHERE enemy_id = $1', [$enemyId]);
+    }
+
+    // ---------- admin: items ----------
+
+    // every item with how many copies players have
+    function getAllItems(){
+        global $conn;
+
+        $result = pg_query($conn,
+            'SELECT item_templates.*, COUNT(inventory.instance_id) AS owned
+             FROM item_templates
+             LEFT JOIN inventory ON inventory.item_id = item_templates.item_id
+             GROUP BY item_templates.item_id
+             ORDER BY item_templates.min_floor, item_templates.item_name'
+        );
+
+        $items = [];
+        if(!$result){
+            return $items;
+        }
+        while($row = pg_fetch_assoc($result)){
+            $items[] = $row;
+        }
+        return $items;
+    }
+
+    function getItem($itemId){
+        global $conn;
+
+        $result = pg_query_params($conn, 'SELECT * FROM item_templates WHERE item_id = $1', [$itemId]);
+
+        if(!$result){
+            return false;
+        }
+        return pg_fetch_assoc($result);
+    }
+
+    function itemNameTaken($name, $itemId){
+        global $conn;
+
+        $result = pg_query_params($conn, 'SELECT item_id FROM item_templates WHERE LOWER(item_name) = LOWER($1) AND item_id <> $2', [$name, $itemId]);
+
+        return $result && pg_num_rows($result) > 0;
+    }
+
+    function countOwned($itemId){
+        global $conn;
+
+        $result = pg_query_params($conn, 'SELECT COUNT(*) FROM inventory WHERE item_id = $1', [$itemId]);
+
+        if(!$result){
+            return 0;
+        }
+        return (int) pg_fetch_result($result, 0, 0);
+    }
+
+    function addItemTemplate($i){
+        global $conn;
+
+        return pg_query_params($conn,
+            'INSERT INTO item_templates (item_name, slot_type, rarity, hp_mult, atk_mult, def_mult, spd_mult, min_floor, description)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)',
+            [$i["item_name"], $i["slot_type"], $i["rarity"], $i["hp_mult"], $i["atk_mult"], $i["def_mult"], $i["spd_mult"], $i["min_floor"], $i["description"]]
+        );
+    }
+
+    function updateItemTemplate($itemId, $i){
+        global $conn;
+
+        return pg_query_params($conn,
+            'UPDATE item_templates SET item_name = $1, slot_type = $2, rarity = $3, hp_mult = $4, atk_mult = $5,
+                    def_mult = $6, spd_mult = $7, min_floor = $8, description = $9
+             WHERE item_id = $10',
+            [$i["item_name"], $i["slot_type"], $i["rarity"], $i["hp_mult"], $i["atk_mult"], $i["def_mult"], $i["spd_mult"], $i["min_floor"], $i["description"], $itemId]
+        );
+    }
+
+    function deleteItemTemplate($itemId){
+        global $conn;
+
+        return pg_query_params($conn, 'DELETE FROM item_templates WHERE item_id = $1', [$itemId]);
+    }

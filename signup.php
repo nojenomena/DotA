@@ -45,6 +45,7 @@
                 session_regenerate_id(true);
                 $_SESSION["account_id"] = $accountId;
                 $_SESSION["username"] = $username;
+                $_SESSION["role"] = "user";
                 header("Location: index.php");
                 exit();
             } else {

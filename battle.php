@@ -1,12 +1,10 @@
 <?php
     session_start();
     include("includes/config.php");
+    include("includes/auth.php");
     include("includes/functions.php");
 
-    if(!isset($_SESSION["account_id"])){
-        header("Location: login.php");
-        exit();
-    }
+    requireLogin();
 
     if(isset($_POST["save_id"])){
         include("includes/db.php");

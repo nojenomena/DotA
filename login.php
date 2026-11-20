@@ -24,6 +24,7 @@
             session_regenerate_id(true);
             $_SESSION["account_id"] = $account["account_id"];
             $_SESSION["username"] = $account["username"];
+            $_SESSION["role"] = $account["role"];
             header("Location: index.php");
             exit();
         }

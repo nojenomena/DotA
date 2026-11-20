@@ -1,14 +1,12 @@
 <?php
     session_start();
     include("includes/config.php");
+    include("includes/auth.php");
     include("includes/db.php");
     include("includes/queries.php");
     include("includes/functions.php");
 
-    if(!isset($_SESSION["account_id"])){
-        header("Location: login.php");
-        exit();
-    }
+    requireLogin();
 
     $slot = isset($_GET["slot"]) ? (int) $_GET["slot"] : 0;
     $saves = getSaves($_SESSION["account_id"]);
@@ -26,7 +24,7 @@
         $units = [];
 
         foreach($config["starting_party"] as $i => $class){
-            $names[$i] = trim($_POST["unit_name"][$i]);
+            $names[$i] = isset($_POST["unit_name"][$i]) ? trim($_POST["unit_name"][$i]) : "";
 
             if(!preg_match("/^[A-Za-z0-9 ]+$/", $names[$i]) || strlen($names[$i]) > $config["unit_name_max"]){
                 $errors[] = "Your " . $config["classes"][$class]["label"] . "'s name must be 1-" . $config["unit_name_max"] . " characters: letters, numbers and spaces.";

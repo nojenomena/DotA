@@ -1,13 +1,11 @@
 <?php
     session_start();
     include("includes/config.php");
+    include("includes/auth.php");
     include("includes/db.php");
     include("includes/queries.php");
 
-    if(!isset($_SESSION["account_id"])){
-        header("Location: login.php");
-        exit();
-    }
+    requireLogin();
 
     // delete button
     if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["delete_save"])){

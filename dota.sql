@@ -13,8 +13,15 @@ CREATE TABLE IF NOT EXISTS accounts (
     account_id   SERIAL PRIMARY KEY,
     username     VARCHAR(30)  NOT NULL UNIQUE,
     password     VARCHAR(255) NOT NULL,              -- password_hash() output, never plain text
+    role         VARCHAR(10)  NOT NULL DEFAULT 'user' CHECK (role IN ('user', 'admin')),
     created_at   TIMESTAMPTZ  NOT NULL DEFAULT now()
 );
+
+-- for databases made before the role column existed (safe to run again)
+ALTER TABLE accounts ADD COLUMN IF NOT EXISTS role VARCHAR(10) NOT NULL DEFAULT 'user' CHECK (role IN ('user', 'admin'));
+
+-- to make someone an admin, sign up normally then run:
+-- UPDATE accounts SET role = 'admin' WHERE username = 'yourname';
 
 -- save_slots: each player can have multiple save slots (up to 3)
 CREATE TABLE IF NOT EXISTS save_slots (
@@ -156,4 +163,4 @@ INSERT INTO enemy_templates (enemy_name, is_boss, is_final_boss, boss_floor, min
     ('Paulo, the Repo Keeper',      TRUE, FALSE, 10, 10, 380, 18, 12, 7, 260),
     ('Jeno, the Database Warden',   TRUE, FALSE, 15, 15, 440, 20, 14, 8, 380),
     ('Jancy, the Final Developer',  TRUE, TRUE,  20, 20, 520, 22, 16, 9, 600)
-ON CONFLICT (enemy_name) DO NOTHING;
+ON CONFLICT (enemy_name) DO NOTHING;

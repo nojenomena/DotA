@@ -388,3 +388,51 @@ a {
     from { top: 10px; opacity: 1; }
     to { top: -30px; opacity: 0; }
 }
+
+/* admin pages */
+.admin-table {
+    border-collapse: collapse;
+    min-width: 300px;
+}
+
+.admin-table th {
+    padding: 5px;
+    text-align: left;
+    background-color: #2b2929;
+}
+
+.admin-table td {
+    padding: 5px 10px;
+}
+
+.success {
+    color: lightgreen;
+    margin-bottom: 10px;
+}
+
+/* add / edit form under the admin tables */
+.admin-form {
+    width: 350px;
+    margin-top: 25px;
+    padding: 15px;
+    border: 2px solid white;
+}
+
+.admin-form h3 {
+    margin-bottom: 10px;
+}
+
+.admin-form input[type=text], .admin-form input[type=number], .admin-form select {
+    width: 95%;
+    padding: 4px;
+    margin-top: 3px;
+    margin-bottom: 10px;
+    font-family: 'Trebuchet MS';
+}
+
+.admin-form button {
+    padding: 6px 12px;
+    margin-top: 5px;
+    font-family: 'Trebuchet MS';
+    cursor: pointer;
+}
