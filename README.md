@@ -5,7 +5,7 @@ Turn-based RPG where your party climbs a 20-floor tower and fights the Developer
 PHP + PostgreSQL (Supabase) + plain HTML, CSS and JavaScript.
 
 ## Live site
-- **URL:** https://YOUR-PROJECT.vercel.app  <!-- PLACEHOLDER: put the real Vercel address here -->
+- **URL:** https://dota-sepia.vercel.app/ 
 - **Platform:** Vercel (PHP with the `vercel-php` runtime, Mumbai region `bom1`) + Supabase (PostgreSQL database and Storage for enemy pictures, region `ap-south-1`)
 
 ### Test accounts (made only for grading)
