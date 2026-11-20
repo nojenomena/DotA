@@ -51,28 +51,36 @@
     include("includes/header.php");
     include("includes/nav.php");
 ?>
-    <div class="form-box">
-        <h2>Sign Up</h2>
+    <main class="center-page">
+        <div class="form-box">
+            <h2>Sign Up</h2>
 
-        <?php foreach($errors as $error){ ?>
-            <p class="error"><?php echo $error; ?></p>
-        <?php } ?>
+            <?php foreach($errors as $error){ ?>
+                <div class="alert alert-danger py-2"><?php echo $error; ?></div>
+            <?php } ?>
 
-        <form method="POST" action="signup.php">
-            <label for="username">Username</label><br>
-            <input type="text" id="username" name="username" maxlength="<?php echo $config["username_max"]; ?>" value="<?php echo htmlspecialchars($username); ?>" required autofocus><br>
+            <form method="POST" action="signup.php">
+                <div class="mb-3">
+                    <label for="username" class="form-label">Username</label>
+                    <input type="text" class="form-control" id="username" name="username" maxlength="<?php echo $config["username_max"]; ?>" value="<?php echo htmlspecialchars($username); ?>" required autofocus>
+                </div>
 
-            <label for="password">Password</label><br>
-            <input type="password" id="password" name="password" maxlength="<?php echo $config["password_max"]; ?>" required style="margin-bottom: 3px;"><br>
-            <p class="hint" style="margin-bottom: 15px;">At least <?php echo $config["password_min"]; ?> characters, 1 uppercase letter and 1 number.</p>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="password" name="password" maxlength="<?php echo $config["password_max"]; ?>" required>
+                    <div class="hint mt-1">At least <?php echo $config["password_min"]; ?> characters, 1 uppercase letter and 1 number.</div>
+                </div>
 
-            <label for="confirm_password">Confirm Password</label><br>
-            <input type="password" id="confirm_password" name="confirm_password" maxlength="<?php echo $config["password_max"]; ?>" required><br>
+                <div class="mb-4">
+                    <label for="confirm_password" class="form-label">Confirm Password</label>
+                    <input type="password" class="form-control" id="confirm_password" name="confirm_password" maxlength="<?php echo $config["password_max"]; ?>" required>
+                </div>
 
-            <button type="submit">Create Account</button>
-        </form>
+                <button type="submit" class="btn btn-light w-100">Create Account</button>
+            </form>
 
-        <p class="form-links">Already have an account? <a href="login.php">Log in</a></p>
-        <p class="form-links"><a href="index.php">Back</a></p>
-    </div>
+            <p class="form-links">Already have an account? <a href="login.php">Log in</a></p>
+            <p class="form-links"><a href="index.php">Back</a></p>
+        </div>
+    </main>
 <?php include("includes/footer.php"); ?>

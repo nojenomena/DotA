@@ -36,24 +36,30 @@
     include("includes/header.php");
     include("includes/nav.php");
 ?>
-    <div class="form-box">
-        <h2>Log In</h2>
+    <main class="center-page">
+        <div class="form-box">
+            <h2>Log In</h2>
 
-        <?php foreach($errors as $error){ ?>
-            <p class="error"><?php echo $error; ?></p>
-        <?php } ?>
+            <?php foreach($errors as $error){ ?>
+                <div class="alert alert-danger py-2"><?php echo $error; ?></div>
+            <?php } ?>
 
-        <form method="POST" action="login.php">
-            <label for="username">Username</label><br>
-            <input type="text" id="username" name="username" value="<?php echo htmlspecialchars($username); ?>" required autofocus><br>
+            <form method="POST" action="login.php">
+                <div class="mb-3">
+                    <label for="username" class="form-label">Username</label>
+                    <input type="text" class="form-control" id="username" name="username" value="<?php echo htmlspecialchars($username); ?>" required autofocus>
+                </div>
 
-            <label for="password">Password</label><br>
-            <input type="password" id="password" name="password" required><br>
+                <div class="mb-4">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="password" name="password" required>
+                </div>
 
-            <button type="submit">Log In</button>
-        </form>
+                <button type="submit" class="btn btn-light w-100">Log In</button>
+            </form>
 
-        <p class="form-links">No account yet? <a href="signup.php">Sign up</a></p>
-        <p class="form-links"><a href="index.php">Back</a></p>
-    </div>
+            <p class="form-links">No account yet? <a href="signup.php">Sign up</a></p>
+            <p class="form-links"><a href="index.php">Back</a></p>
+        </div>
+    </main>
 <?php include("includes/footer.php"); ?>

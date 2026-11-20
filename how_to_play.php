@@ -26,7 +26,7 @@
     include("includes/header.php");
     include("includes/nav.php");
 ?>
-    <div id="container" class="rules">
+    <main class="container rules py-4">
         <h2>How to Play</h2>
 
         <h3>The goal</h3>
@@ -59,7 +59,7 @@
         </ul>
 
         <h3>Skills</h3>
-        <table border="1" class="item-table">
+        <div class="table-responsive"><table class="table table-bordered table-sm">
             <tr><th>Class</th><th>Skill</th><th>Unlocks at</th><th>Hits</th><th>Effect</th><th>Wait</th></tr>
             <?php foreach($config["skills"] as $class => $classSkills){ ?>
                 <?php foreach($classSkills as $skill){ ?>
@@ -73,7 +73,7 @@
                     </tr>
                 <?php } ?>
             <?php } ?>
-        </table>
+        </table></div>
 
         <h3>Status effects</h3>
         <ul>
@@ -101,20 +101,19 @@
         <p>Your score is the total XP you gained in battles. See it on the <b>Records</b> page.</p>
 
         <h3>Controls</h3>
-        <table border="1" class="item-table">
+        <div class="table-responsive"><table class="table table-bordered table-sm">
             <tr><th>Key</th><th>What it does</th></tr>
             <tr><td>W A S D / Arrow keys</td><td>move in the menu, pick a target</td></tr>
             <tr><td>Enter / Space</td><td>choose, close the floor intro, Next Floor / Try Again</td></tr>
             <tr><td>Esc / Backspace</td><td>go back (on the main battle menu: pause)</td></tr>
             <tr><td>P</td><td>pause / resume</td></tr>
             <tr><td>Mouse</td><td>click a button, click an enemy to attack it, click a party member to heal them</td></tr>
-        </table>
+        </table></div>
 
-        <br>
         <?php if(isset($_SESSION["account_id"])){ ?>
-            <button class="menu-button" onclick="window.location.href='saves.php'">Play</button>
+            <a class="btn btn-light px-5" href="saves.php">Play</a>
         <?php } else { ?>
-            <button class="menu-button" onclick="window.location.href='signup.php'">Sign Up to Play</button>
+            <a class="btn btn-light px-5" href="signup.php">Sign Up to Play</a>
         <?php } ?>
-    </div>
+    </main>
 <?php include("includes/footer.php"); ?>

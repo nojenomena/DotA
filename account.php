@@ -67,70 +67,67 @@
     include("includes/header.php");
     include("includes/nav.php");
 ?>
-    <div class="form-box">
-        <h2>Profile</h2>
+    <main class="center-page">
+        <div class="form-box form-box-wide">
+            <h2>Profile</h2>
 
-        <table border="1" class="item-table">
-            <tr><td>Username</td><td><b><?php echo htmlspecialchars($_SESSION["username"]); ?></b></td></tr>
-            <tr><td>Role</td><td><?php echo isAdmin() ? "Admin" : "Player"; ?></td></tr>
-            <tr><td>Joined</td><td><?php echo $account ? date("F j, Y", strtotime($account["created_at"])) : "-"; ?></td></tr>
-            <tr><td>Saves</td><td><?php echo $stats["saves"]; ?> / <?php echo $config["max_save_slots"]; ?></td></tr>
-            <tr><td>Battles</td><td><?php echo $stats["battles"]; ?> (<?php echo $stats["wins"]; ?> won, <?php echo $stats["losses"]; ?> lost)</td></tr>
-            <tr><td>Highest floor</td><td><?php echo $stats["best_floor"]; ?> / <?php echo $config["total_floors"]; ?></td></tr>
-            <tr><td>Total score</td><td><?php echo $stats["score"]; ?> XP</td></tr>
-        </table>
-        <p class="hint" style="margin-top: 5px;">See every battle on the <a href="records.php">Records</a> page.</p>
+            <table class="table table-bordered table-sm mb-1">
+                <tr><td>Username</td><td><b><?php echo htmlspecialchars($_SESSION["username"]); ?></b></td></tr>
+                <tr><td>Role</td><td><?php echo isAdmin() ? "Admin" : "Player"; ?></td></tr>
+                <tr><td>Joined</td><td><?php echo $account ? date("F j, Y", strtotime($account["created_at"])) : "-"; ?></td></tr>
+                <tr><td>Saves</td><td><?php echo $stats["saves"]; ?> / <?php echo $config["max_save_slots"]; ?></td></tr>
+                <tr><td>Battles</td><td><?php echo $stats["battles"]; ?> (<?php echo $stats["wins"]; ?> won, <?php echo $stats["losses"]; ?> lost)</td></tr>
+                <tr><td>Highest floor</td><td><?php echo $stats["best_floor"]; ?> / <?php echo $config["total_floors"]; ?></td></tr>
+                <tr><td>Total score</td><td><?php echo $stats["score"]; ?> XP</td></tr>
+            </table>
+            <p class="hint" style="margin-top: 5px;">See every battle on the <a href="records.php">Records</a> page.</p>
 
-        <br>
-        <hr>
-        <br>
+            <hr class="my-4">
 
-        <h3>Change Password</h3>
-        <br>
+            <h3 class="mb-3">Change Password</h3>
 
-        <?php if(isset($_GET["changed"])){ ?>
-            <p class="success">Password changed.</p>
-        <?php } ?>
-        <?php foreach($passwordErrors as $error){ ?>
-            <p class="error"><?php echo $error; ?></p>
-        <?php } ?>
+            <?php if(isset($_GET["changed"])){ ?>
+                <div class="alert alert-success py-2">Password changed.</div>
+            <?php } ?>
+            <?php foreach($passwordErrors as $error){ ?>
+                <div class="alert alert-danger py-2"><?php echo $error; ?></div>
+            <?php } ?>
 
-        <form method="POST" action="account.php">
-            <input type="hidden" name="change_password" value="1">
+            <form method="POST" action="account.php">
+                <input type="hidden" name="change_password" value="1">
 
-            <label for="current_password">Current password</label><br>
-            <input type="password" id="current_password" name="current_password" required><br>
+                <label for="current_password" class="form-label">Current password</label>
+                <input type="password" class="form-control mb-3" id="current_password" name="current_password" required>
 
-            <label for="new_password">New password</label><br>
-            <input type="password" id="new_password" name="new_password" maxlength="<?php echo $config["password_max"]; ?>" required style="margin-bottom: 3px;"><br>
-            <p class="hint" style="margin-bottom: 15px;">At least <?php echo $config["password_min"]; ?> characters, 1 uppercase letter and 1 number.</p>
+                <label for="new_password" class="form-label">New password</label>
+                <input type="password" class="form-control" id="new_password" name="new_password" maxlength="<?php echo $config["password_max"]; ?>" required>
+                <div class="hint mt-1 mb-3">At least <?php echo $config["password_min"]; ?> characters, 1 uppercase letter and 1 number.</div>
 
-            <label for="confirm_password">Confirm new password</label><br>
-            <input type="password" id="confirm_password" name="confirm_password" maxlength="<?php echo $config["password_max"]; ?>" required><br>
+                <label for="confirm_password" class="form-label">Confirm new password</label>
+                <input type="password" class="form-control mb-4" id="confirm_password" name="confirm_password" maxlength="<?php echo $config["password_max"]; ?>" required>
 
-            <button type="submit">Change Password</button>
-        </form>
+                <button type="submit" class="btn btn-light w-100">Change Password</button>
+            </form>
 
-        <br>
-        <hr>
-        <br>
+            <hr class="my-4">
 
-        <h3>Delete Account</h3>
-        <p class="hint" style="margin-bottom: 15px;">This deletes your account, all your saves, party members and items. You can't undo this.</p>
+            <h3>Delete Account</h3>
+            <p class="hint" style="margin-bottom: 15px;">This deletes your account, all your saves, party members and items. You can't undo this.</p>
 
-        <?php foreach($deleteErrors as $error){ ?>
-            <p class="error"><?php echo $error; ?></p>
-        <?php } ?>
+            <?php foreach($deleteErrors as $error){ ?>
+                <div class="alert alert-danger py-2"><?php echo $error; ?></div>
+            <?php } ?>
 
-        <form method="POST" action="account.php" onsubmit="return confirm('Are you really sure? Everything will be deleted.');">
-            <input type="hidden" name="delete_account" value="1">
+            <form method="POST" action="account.php" onsubmit="return confirm('Are you really sure? Everything will be deleted.');">
+                <input type="hidden" name="delete_account" value="1">
 
-            <label for="password">Type your password to confirm</label><br>
-            <input type="password" id="password" name="password" required><br>
+                <label for="password" class="form-label">Type your password to confirm</label>
+                <input type="password" class="form-control mb-3" id="password" name="password" required>
 
-            <button type="submit" class="delete-button">Delete My Account</button>
-        </form>
+                <button type="submit" class="btn btn-outline-danger w-100">Delete My Account</button>
+            </form>
 
-        <p class="form-links"><a href="index.php">Back</a></p>
-    </div>
+            <p class="form-links"><a href="index.php">Back</a></p>
+        </div>
+    </main>
 <?php include("includes/footer.php"); ?>

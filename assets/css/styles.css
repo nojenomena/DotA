@@ -1,3 +1,21 @@
+/* ---------- Bootstrap, our way ----------
+   bootstrap.min.css is loaded first (includes/header.php), these settings change its look:
+   our dark color, Trebuchet MS, square corners, plain white borders */
+:root, [data-bs-theme=dark] {
+    --bs-body-bg: #383636;
+    --bs-body-color: white;
+    --bs-body-font-family: 'Trebuchet MS', sans-serif;
+    --bs-border-color: gray;
+    --bs-border-radius: 0;
+    --bs-border-radius-sm: 0;
+    --bs-border-radius-lg: 0;
+    --bs-link-color: lightblue;
+    --bs-link-color-rgb: 173, 216, 230;
+    --bs-link-hover-color: white;
+    --bs-link-hover-color-rgb: 255, 255, 255;
+    --bs-secondary-color: lightgray;
+}
+
 * {
     margin: 0px;
     padding: 0px;
@@ -6,11 +24,57 @@
 body {
     background-color: #383636;
     color: white;
-    font-family: 'Trebuchet MS';
+    font-family: 'Trebuchet MS', sans-serif;
 }
 
 a {
     color: lightblue;
+}
+
+/* inputs: plain and flat, white border when you click in */
+.form-control, .form-select {
+    background-color: #2b2929;
+    border: 1px solid gray;
+    color: white;
+}
+
+.form-control:focus, .form-select:focus {
+    background-color: #2b2929;
+    border-color: white;
+    color: white;
+    box-shadow: none;
+}
+
+/* buttons: flat, no shadows */
+.btn {
+    font-family: 'Trebuchet MS', sans-serif;
+    box-shadow: none !important;
+}
+
+/* tables: same background as the page */
+.table {
+    --bs-table-bg: transparent;
+    --bs-table-border-color: gray;
+}
+
+/* messages (alerts): just a colored line on the left */
+.alert {
+    border-width: 0 0 0 4px;
+    background-color: #2b2929;
+    color: white;
+}
+
+.alert-danger { border-color: #e05555; }
+.alert-success { border-color: lightgreen; }
+.alert-warning { border-color: yellow; }
+
+/* pages that sit in the middle of the screen (title, log in, sign up, profile ...) */
+.center-page {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 30px 15px;
 }
 
 #container {
@@ -22,16 +86,32 @@ a {
 
 /* title page starts here */
 
+.title-box {
+    width: 100%;
+    max-width: 520px;
+    text-align: center;
+}
+
+.menu-buttons {
+    max-width: 260px;
+    margin: auto;
+}
+
 #title {
-    font-size: 55px;
-    margin-top: 120px;
+    font-size: 48px;
     margin-bottom: 10px;
+}
+
+@media (max-width: 576px) {
+    #title {
+        font-size: 34px;
+    }
 }
 
 #subtitle {
     font-size: 20px;
     color: lightgray;
-    margin-bottom: 50px;
+    margin-bottom: 40px;
 }
 
 .menu-button {
@@ -46,11 +126,14 @@ a {
 /* login page starts here */
 
 .form-box {
-    width: 350px;
-    margin: auto;
-    margin-top: 80px;
-    padding: 20px;
+    width: 100%;
+    max-width: 380px;
+    padding: 25px;
     border: 2px solid white;
+}
+
+.form-box-wide {
+    max-width: 460px;
 }
 
 .form-box h2 {
@@ -62,21 +145,6 @@ a {
     font-size: 15px;
 }
 
-.form-box input[type=text], .form-box input[type=password] {
-    width: 95%;
-    padding: 5px;
-    margin-top: 3px;
-    margin-bottom: 15px;
-    font-size: 15px;
-}
-
-.form-box button {
-    width: 100%;
-    padding: 8px;
-    font-family: 'Trebuchet MS';
-    font-size: 16px;
-    cursor: pointer;
-}
 
 .form-links {
     text-align: center;
@@ -304,21 +372,41 @@ a {
     font-weight: bold;
 }
 
-/* menu on top (includes/nav.php) */
+/* menu on top (includes/nav.php), a Bootstrap navbar */
 #nav {
-    padding: 8px 15px;
     background-color: #2b2929;
     border-bottom: 2px solid gray;
 }
 
-#nav a {
-    margin-right: 15px;
+#nav .navbar-brand {
+    font-weight: bold;
+    color: white;
+}
+
+#nav .nav-link {
+    color: lightblue;
+    text-decoration: underline;
+}
+
+#nav .nav-link:hover {
+    color: white;
+}
+
+#nav .nav-admin {
+    font-weight: bold;
+}
+
+#nav .navbar-text {
+    color: white;
+}
+
+#nav .navbar-toggler {
+    border-color: gray;
 }
 
 /* bottom of every page (includes/footer.php) */
 #footer {
     clear: both;
-    margin-top: 40px;
     padding: 15px;
     text-align: center;
     font-size: 12px;
@@ -517,4 +605,16 @@ img.sprite {
 
 .timer-low {
     color: red;
+}
+
+#nav .navbar-text {
+    padding: 8px 0;
+}
+
+.form-box h3 {
+    font-size: 1.3rem;
+}
+
+.rules h3 {
+    font-size: 1.4rem;
 }

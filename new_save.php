@@ -49,26 +49,30 @@
     include("includes/header.php");
     include("includes/nav.php");
 ?>
-    <div class="form-box" style="width: 420px;">
-        <h2>New Game - Slot <?php echo $slot; ?></h2>
-        <p class="hint" style="text-align: center; margin-bottom: 15px;">Name your party.</p>
+    <main class="center-page">
+        <div class="form-box form-box-wide">
+            <h2>New Game - Slot <?php echo $slot; ?></h2>
+            <p class="hint text-center mb-3">Name your party.</p>
 
-        <?php foreach($errors as $error){ ?>
-            <p class="error"><?php echo $error; ?></p>
-        <?php } ?>
-
-        <form method="POST" action="new_save.php?slot=<?php echo $slot; ?>">
-            <?php foreach($config["starting_party"] as $i => $class){ $stats = $config["classes"][$class]; ?>
-                <label for="unit_<?php echo $i; ?>">
-                    <?php echo $stats["label"]; ?>
-                    <span class="hint">(HP <?php echo $stats["max_hp"]; ?>, ATK <?php echo $stats["attack"]; ?>, DEF <?php echo $stats["defense"]; ?>, SPD <?php echo $stats["speed"]; ?>)</span>
-                </label><br>
-                <input type="text" id="unit_<?php echo $i; ?>" name="unit_name[<?php echo $i; ?>]" maxlength="<?php echo $config["unit_name_max"]; ?>" value="<?php echo htmlspecialchars($names[$i]); ?>" required><br>
+            <?php foreach($errors as $error){ ?>
+                <div class="alert alert-danger py-2"><?php echo $error; ?></div>
             <?php } ?>
 
-            <button type="submit">Start Climbing</button>
-        </form>
+            <form method="POST" action="new_save.php?slot=<?php echo $slot; ?>">
+                <?php foreach($config["starting_party"] as $i => $class){ $stats = $config["classes"][$class]; ?>
+                    <div class="mb-3">
+                        <label for="unit_<?php echo $i; ?>" class="form-label">
+                            <?php echo $stats["label"]; ?>
+                            <span class="hint">(HP <?php echo $stats["max_hp"]; ?>, ATK <?php echo $stats["attack"]; ?>, DEF <?php echo $stats["defense"]; ?>, SPD <?php echo $stats["speed"]; ?>)</span>
+                        </label>
+                        <input type="text" class="form-control" id="unit_<?php echo $i; ?>" name="unit_name[<?php echo $i; ?>]" maxlength="<?php echo $config["unit_name_max"]; ?>" value="<?php echo htmlspecialchars($names[$i]); ?>" required>
+                    </div>
+                <?php } ?>
 
-        <p class="form-links"><a href="saves.php">Back</a></p>
-    </div>
+                <button type="submit" class="btn btn-light w-100 mt-2">Start Climbing</button>
+            </form>
+
+            <p class="form-links"><a href="saves.php">Back</a></p>
+        </div>
+    </main>
 <?php include("includes/footer.php"); ?>

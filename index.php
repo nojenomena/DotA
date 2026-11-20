@@ -7,29 +7,29 @@
     include("includes/header.php");
     include("includes/nav.php");
 ?>
-    <div id="container" style="text-align: center;">
-        <!-- PLACEHOLDER: logo picture (paulo) -->
-        <h1 id="title">Defense of the Alphards</h1>
-        <p id="subtitle">Climb the tower. Defeat the Developers.</p>
+    <main class="center-page">
+        <div class="title-box">
+            <!-- PLACEHOLDER: logo picture (paulo) -->
+            <h1 id="title">Defense of the Alphards</h1>
+            <p id="subtitle">Climb the tower. Defeat the Developers.</p>
 
-        <?php if(isset($_GET["deleted"])){ ?>
-            <p style="color: yellow; margin-bottom: 20px;">Your account was deleted.</p>
-        <?php } ?>
+            <?php if(isset($_GET["deleted"])){ ?>
+                <div class="alert alert-warning py-2">Your account was deleted.</div>
+            <?php } ?>
 
-        <?php if(isset($_SESSION["account_id"])){ ?>
-            <p>Welcome, <b><?php echo htmlspecialchars($_SESSION["username"]); ?></b>!</p>
-            <br>
-            <button class="menu-button" onclick="window.location.href='saves.php'">Continue</button>
-            <br>
-            <button class="menu-button" onclick="window.location.href='account.php'">Profile</button>
-            <br>
-            <button class="menu-button" onclick="window.location.href='logout.php'">Log Out</button>
-        <?php } else { ?>
-            <button class="menu-button" onclick="window.location.href='login.php'">Log In</button>
-            <br>
-            <button class="menu-button" onclick="window.location.href='signup.php'">Sign Up</button>
-            <br>
-            <button class="menu-button" onclick="window.location.href='how_to_play.php'">How to Play</button>
-        <?php } ?>
-    </div>
+            <div class="menu-buttons">
+                <?php if(isset($_SESSION["account_id"])){ ?>
+                    <p class="mb-3">Welcome, <b><?php echo htmlspecialchars($_SESSION["username"]); ?></b>!</p>
+                    <a class="btn btn-light w-100 mb-2" href="saves.php">Continue</a>
+                    <a class="btn btn-outline-light w-100 mb-2" href="how_to_play.php">How to Play</a>
+                    <a class="btn btn-outline-light w-100 mb-2" href="account.php">Profile</a>
+                    <a class="btn btn-outline-light w-100" href="logout.php">Log Out</a>
+                <?php } else { ?>
+                    <a class="btn btn-light w-100 mb-2" href="login.php">Log In</a>
+                    <a class="btn btn-outline-light w-100 mb-2" href="signup.php">Sign Up</a>
+                    <a class="btn btn-outline-light w-100" href="how_to_play.php">How to Play</a>
+                <?php } ?>
+            </div>
+        </div>
+    </main>
 <?php include("includes/footer.php"); ?>
