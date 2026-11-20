@@ -13,6 +13,10 @@
         "password_max"   => 72,
         "unit_name_max"  => 20,
 
+        // picture uploads (admin enemy pictures)
+        "upload_max_kb"  => 2048,    // 2 MB
+        "upload_types"   => ["image/jpeg" => "jpg", "image/png" => "png", "image/gif" => "gif", "image/webp" => "webp"],
+
         // tower
         "total_floors"   => 20,
         "boss_every"     => 5,     // boss on floors multuiple of 5

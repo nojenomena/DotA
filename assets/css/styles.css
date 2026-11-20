@@ -436,3 +436,21 @@ a {
     font-family: 'Trebuchet MS';
     cursor: pointer;
 }
+
+/* small picture in the admin table and form */
+.thumb {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border: 1px solid gray;
+}
+
+/* enemy picture in battle (same size as the letter box) */
+img.sprite {
+    object-fit: cover;
+}
+
+.admin-form input[type=file] {
+    margin-top: 3px;
+    margin-bottom: 10px;
+}

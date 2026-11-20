@@ -77,8 +77,11 @@
         <div id="enemy-side">
             <?php foreach($battle["enemies"] as $i => $enemy){ ?>
                 <div class="slot enemy-slot" id="enemy-<?php echo $i; ?>" onclick="clickEnemy(<?php echo $i; ?>)">
-                    <!-- PLACEHOLDER: enemy picture -->
-                    <div class="sprite"><?php echo strtoupper(substr($enemy["name"], 0, 1)); ?></div>
+                    <?php if(!empty($enemy["image"])){ ?>
+                        <img class="sprite" src="<?php echo htmlspecialchars($enemy["image"]); ?>" alt="<?php echo htmlspecialchars($enemy["name"]); ?>">
+                    <?php } else { ?>
+                        <div class="sprite"><?php echo strtoupper(substr($enemy["name"], 0, 1)); ?></div>
+                    <?php } ?>
                     <b><?php echo htmlspecialchars($enemy["name"]); ?></b>
                     <?php if($enemy["is_boss"]){ ?><span style="color: red;">[BOSS]</span><?php } ?>
                     <br>

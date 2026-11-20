@@ -8,6 +8,7 @@
 
     include("../includes/db.php");
     include("../includes/queries.php");
+    include("../includes/upload.php");
 
     $errors = [];
 
@@ -15,6 +16,7 @@
     $form = [
         "enemy_name" => "", "is_boss" => false, "boss_floor" => "", "min_floor" => 1,
         "base_hp" => 50, "base_attack" => 10, "base_defense" => 5, "base_speed" => 5, "xp_reward" => 20,
+        "image" => "",
     ];
     $editId = 0;
 
@@ -36,6 +38,7 @@
         } else if($enemy["is_boss"] == "f" && $enemy["min_floor"] == 1 && countFloorOneEnemies() <= 1){
             $errors[] = "You can't delete the last enemy that can appear on floor 1.";
         } else if(deleteEnemy($enemy["enemy_id"])){
+            deleteUpload($enemy["image"]);    // its picture goes too
             header("Location: enemies.php?done=deleted");
             exit();
         } else {
@@ -55,6 +58,16 @@
             "base_speed"   => (int) $_POST["base_speed"],
             "xp_reward"    => (int) $_POST["xp_reward"],
         ];
+
+        // the picture it has now (when editing)
+        $oldImage = "";
+        if($editId > 0){
+            $old = getEnemy($editId);
+            if($old && $old["image"] != ""){
+                $oldImage = $old["image"];
+            }
+        }
+        $form["image"] = $oldImage;
 
         // checks
         if(!preg_match("/^[A-Za-z0-9 ,.'-]+$/", $form["enemy_name"]) || strlen($form["enemy_name"]) > 50){
@@ -97,12 +110,34 @@
             }
         }
 
+        // new picture: only saved when everything else is ok
+        $newImage = "";
+        $hasFile = isset($_FILES["image"]) && $_FILES["image"]["error"] != UPLOAD_ERR_NO_FILE;
+        if(empty($errors) && $hasFile){
+            $folder = $form["is_boss"] ? "uploads/bosses/" : "uploads/enemies/";
+            $upload = saveUpload($_FILES["image"], $folder, $form["is_boss"] ? "boss" : "enemy");
+
+            if($upload["error"] != ""){
+                $errors[] = $upload["error"];
+            } else {
+                $newImage = $upload["path"];
+            }
+        }
+
         if(empty($errors)){
+            // which picture to keep: the new one, none (removed), or the old one
+            if($newImage != ""){
+                $form["image"] = $newImage;
+            } else if(isset($_POST["remove_image"])){
+                $form["image"] = "";
+            }
+
             // postgres wants "t" / "f" for true / false
             $save = $form;
             $save["is_boss"] = $form["is_boss"] ? "t" : "f";
             $save["is_final_boss"] = ($form["is_boss"] && $form["boss_floor"] == $config["total_floors"]) ? "t" : "f";
             $save["boss_floor"] = $form["is_boss"] ? $form["boss_floor"] : null;
+            $save["image"] = $form["image"] != "" ? $form["image"] : null;
 
             if($editId > 0){
                 $ok = updateEnemy($editId, $save);
@@ -113,9 +148,14 @@
             }
 
             if($ok){
+                // the old picture was replaced or removed: delete the file
+                if($oldImage != "" && $oldImage != $form["image"]){
+                    deleteUpload($oldImage);
+                }
                 header("Location: enemies.php?done=" . $done);
                 exit();
             }
+            deleteUpload($newImage);
             $errors[] = "Couldn't save the enemy. Try again.";
         }
     }
@@ -152,6 +192,7 @@
 
         <table border="1" class="item-table">
             <tr>
+                <th>Picture</th>
                 <th>Name</th>
                 <th>Type</th>
                 <th>Floor</th>
@@ -165,6 +206,13 @@
             </tr>
             <?php foreach($enemies as $enemy){ ?>
                 <tr>
+                    <td>
+                        <?php if($enemy["image"] != ""){ ?>
+                            <img class="thumb" src="../<?php echo htmlspecialchars($enemy["image"]); ?>" alt="">
+                        <?php } else { ?>
+                            <span class="hint">none</span>
+                        <?php } ?>
+                    </td>
                     <td><?php echo htmlspecialchars($enemy["enemy_name"]); ?></td>
                     <td>
                         <?php
@@ -214,7 +262,8 @@
                 <h3>Add an enemy</h3>
             <?php } ?>
 
-            <form method="POST" action="enemies.php">
+            <!-- multipart/form-data is needed to send a file -->
+            <form method="POST" action="enemies.php" enctype="multipart/form-data">
                 <input type="hidden" name="enemy_id" value="<?php echo $editId; ?>">
 
                 <label for="enemy_name">Name</label><br>
@@ -246,6 +295,14 @@
 
                 <label for="xp_reward">XP reward</label><br>
                 <input type="number" id="xp_reward" name="xp_reward" min="0" max="9999" required value="<?php echo (int) $form["xp_reward"]; ?>"><br>
+
+                <label for="image">Picture (JPG, PNG, GIF or WEBP, max <?php echo $config["upload_max_kb"] / 1024; ?> MB)</label><br>
+                <?php if($form["image"] != ""){ ?>
+                    <img class="thumb" src="../<?php echo htmlspecialchars($form["image"]); ?>" alt=""><br>
+                    <input type="checkbox" id="remove_image" name="remove_image">
+                    <label for="remove_image">Remove this picture</label><br>
+                <?php } ?>
+                <input type="file" id="image" name="image" accept="image/jpeg,image/png,image/gif,image/webp"><br>
 
                 <?php if($editId > 0){ ?>
                     <button type="submit">Save Changes</button>

@@ -45,6 +45,7 @@
             "defense"    => (int) round($row["base_defense"] * (1 + $config["enemy_defense_per_floor"] * $floorsUp)),
             "speed"      => (int) round($row["base_speed"] * (1 + $config["enemy_speed_per_floor"] * $floorsUp)),
             "xp_reward"  => (int) round($row["xp_reward"] * (1 + $config["enemy_xp_per_floor"] * $floorsUp)),
+            "image"      => $row["image"],    // null if there's no picture
         ];
     }
 

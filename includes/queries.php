@@ -386,9 +386,9 @@
         global $conn;
 
         return pg_query_params($conn,
-            'INSERT INTO enemy_templates (enemy_name, is_boss, is_final_boss, boss_floor, min_floor, base_hp, base_attack, base_defense, base_speed, xp_reward)
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)',
-            [$e["enemy_name"], $e["is_boss"], $e["is_final_boss"], $e["boss_floor"], $e["min_floor"], $e["base_hp"], $e["base_attack"], $e["base_defense"], $e["base_speed"], $e["xp_reward"]]
+            'INSERT INTO enemy_templates (enemy_name, is_boss, is_final_boss, boss_floor, min_floor, base_hp, base_attack, base_defense, base_speed, xp_reward, image)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)',
+            [$e["enemy_name"], $e["is_boss"], $e["is_final_boss"], $e["boss_floor"], $e["min_floor"], $e["base_hp"], $e["base_attack"], $e["base_defense"], $e["base_speed"], $e["xp_reward"], $e["image"]]
         );
     }
 
@@ -397,9 +397,9 @@
 
         return pg_query_params($conn,
             'UPDATE enemy_templates SET enemy_name = $1, is_boss = $2, is_final_boss = $3, boss_floor = $4, min_floor = $5,
-                    base_hp = $6, base_attack = $7, base_defense = $8, base_speed = $9, xp_reward = $10
-             WHERE enemy_id = $11',
-            [$e["enemy_name"], $e["is_boss"], $e["is_final_boss"], $e["boss_floor"], $e["min_floor"], $e["base_hp"], $e["base_attack"], $e["base_defense"], $e["base_speed"], $e["xp_reward"], $enemyId]
+                    base_hp = $6, base_attack = $7, base_defense = $8, base_speed = $9, xp_reward = $10, image = $11
+             WHERE enemy_id = $12',
+            [$e["enemy_name"], $e["is_boss"], $e["is_final_boss"], $e["boss_floor"], $e["min_floor"], $e["base_hp"], $e["base_attack"], $e["base_defense"], $e["base_speed"], $e["xp_reward"], $e["image"], $enemyId]
         );
     }
 

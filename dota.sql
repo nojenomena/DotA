@@ -94,8 +94,12 @@ CREATE TABLE IF NOT EXISTS enemy_templates (
     base_attack   INT         NOT NULL CHECK (base_attack >= 0),
     base_defense  INT         NOT NULL CHECK (base_defense >= 0),
     base_speed    INT         NOT NULL CHECK (base_speed >= 0),
-    xp_reward     INT         NOT NULL DEFAULT 0 CHECK (xp_reward >= 0)
+    xp_reward     INT         NOT NULL DEFAULT 0 CHECK (xp_reward >= 0),
+    image         VARCHAR(100)                          -- uploaded picture, like uploads/bosses/boss_1a2b3c4d.png
 );
+
+-- for databases made before the image column existed (safe to run again)
+ALTER TABLE enemy_templates ADD COLUMN IF NOT EXISTS image VARCHAR(100);
 
 
 -- battle_results: one row for every finished battle, score = xp_gained (week 6, records.php)
