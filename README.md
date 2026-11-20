@@ -4,6 +4,24 @@ A web-based game for CBAD by Mga Mango
 Turn-based RPG where your party climbs a 20-floor tower and fights the Developers.
 PHP + PostgreSQL (Supabase) + plain HTML, CSS and JavaScript.
 
+## Live site
+- **URL:** https://YOUR-PROJECT.vercel.app  <!-- PLACEHOLDER: put the real Vercel address here -->
+- **Platform:** Vercel (PHP with the `vercel-php` runtime, Mumbai region `bom1`) + Supabase (PostgreSQL database and Storage for enemy pictures, region `ap-south-1`)
+
+### Test accounts (made only for grading)
+| Role | Username | Password |
+|------|----------|----------|
+| Admin | PLACEHOLDER | PLACEHOLDER |
+| Regular user | PLACEHOLDER | PLACEHOLDER |
+
+### Members
+| Name | Role in the project |
+|------|---------------------|
+| PLACEHOLDER | |
+| PLACEHOLDER | |
+| PLACEHOLDER | |
+| PLACEHOLDER | |
+
 ## How to play
 - Make an account, then start a New Game in one of your 3 save slots.
 - Your party is always a Warrior, a Mage and a Cleric. You only pick their names.
@@ -25,6 +43,21 @@ PHP + PostgreSQL (Supabase) + plain HTML, CSS and JavaScript.
 | Esc / Backspace | go back |
 
 The mouse works too: click a button, click an enemy to attack it, click a party member to heal them.
+
+The full rules are also in the game: **How to Play** in the menu.
+
+## Roles
+| Page or feature | Guest | Player | Admin |
+|-----------------|-------|--------|-------|
+| Home, How to Play, Log In, Sign Up | Yes | Yes | Yes |
+| Saves, battles, Party, Records, Profile (own data only) | No | Yes | Yes |
+| Admin dashboard, manage users, enemies (with pictures) and items | No | No | Yes |
+
+A player who opens an admin page gets **Access Denied**. To make someone an admin, run this in the Supabase SQL Editor:
+```sql
+UPDATE accounts SET role = 'admin' WHERE username = 'their_username';
+```
+They have to log out and log in again.
 
 ## Setup (Windows + XAMPP + Supabase)
 1. **Database**
@@ -48,27 +81,66 @@ The mouse works too: click a button, click an enemy to attack it, click a party 
      ```
    - Open `http://localhost/Dota-MgaMango/` in the browser.
 
+## Enemy pictures (Supabase Storage)
+Without these settings, pictures are saved in `uploads/` (fine on XAMPP). On Vercel they **must** go to Supabase Storage,
+because Vercel can't save files.
+1. Supabase > **Storage** > **New bucket**, name it `enemy-pictures` and turn on **Public bucket**.
+2. Supabase > **Project Settings** > **API Keys**: copy the project URL and a **secret** key (or the old `service_role` key).
+3. Put them in `db_config.php` (`$supabaseUrl`, `$supabaseKey`, `$storageBucket`) and/or in the Vercel environment variables below.
+   The secret key can do anything in your project: never put it in JavaScript or on GitHub.
+
+## Deploy on Vercel
+1. Run `dota.sql` in Supabase again (it adds the `sessions` table that Vercel needs).
+2. Push the project to GitHub (`db_config.php` stays on your computer, it's in `.gitignore`).
+3. On vercel.com: **Add New** > **Project** > import the GitHub repo. Framework preset: **Other**, no build command.
+4. **Environment Variables** (same values as your `db_config.php`):
+
+   | Name | Value |
+   |------|-------|
+   | `DB_HOST` | the Session pooler host, like `aws-0-ap-south-1.pooler.supabase.com` |
+   | `DB_PORT` | `5432` |
+   | `DB_NAME` | `postgres` |
+   | `DB_USER` | the pooler user, like `postgres.abcdefgh` |
+   | `DB_PASSWORD` | your database password |
+   | `SUPABASE_URL` | like `https://abcdefgh.supabase.co` |
+   | `SUPABASE_KEY` | the secret key |
+   | `STORAGE_BUCKET` | `enemy-pictures` |
+
+5. Project **Settings** > **Build and Deployment** > **Node.js Version**: `22.x` (what `vercel-php` supports).
+6. **Deploy**, then open the address Vercel gives you.
+
+How it works on Vercel: `vercel.json` sends every `.php` address to `api/index.php`, which only allows the real pages,
+keeps sessions in the database (`includes/session_db.php`), and runs the page. CSS, JS and sounds are served as normal files.
+XAMPP never uses `api/` or `vercel.json`.
+
 ## Problems
 | You see | Fix |
 |---------|-----|
-| `Missing db_config.php` | do step 2 of the setup |
+| `Missing database details` | do step 2 of the setup (on Vercel: check the environment variables) |
 | `Can't connect to the database right now` | check `db_config.php`, and check that the Supabase project is not paused |
 | `Call to undefined function pg_connect()` | do step 3 of the setup |
 | "Connection problem" when a battle ends | run `dota.sql` again (a table is missing) |
 | `This save has no party, or there are no enemies` | run `dota.sql` again (the enemy list is empty) |
 | Old look or old buttons after an update | press Ctrl + F5 |
+| `Couldn't upload the picture to storage` | check the 3 Supabase Storage settings, and that the bucket exists and is public |
+| Logged out after every click on Vercel | run `dota.sql` again (the `sessions` table is missing) |
+| Vercel page shows an error right away | Vercel > your project > **Logs** shows the PHP error |
 
 ## Folders
 
 ```
-/                    user pages (index.php, login.php, saves.php, party.php, battle.php, records.php ...)
+/                    user pages (index.php, login.php, saves.php, party.php, battle.php, records.php,
+                     account.php = profile, how_to_play.php, access_denied.php ...)
 battle_action.php    does one battle turn (battle.js sends the action here)
 includes/            reusable includes
-    db.php               database connection
+    db.php               database connection (db_config.php, or Vercel environment variables)
     db_config.php        your database password (NOT in git, make it from the template)
-    config.php           all game numbers (stats, skills, enemies, drops)
+    auth.php             requireLogin(), requireAdmin(), password rules
+    config.php           all game numbers (stats, skills, enemies, drops, upload limits)
     functions.php        game formulas (damage, xp, rewards ...)
     queries.php          all the SQL
+    upload.php           picture uploads (Supabase Storage or uploads/)
+    session_db.php       sessions in the database (Vercel only)
     header.php           top of every page (<head>, css)
     nav.php              menu on top of every page
     footer.php           bottom of every page
@@ -79,7 +151,10 @@ assets/
     sounds/              select, hit, crit, heal, victory, defeat (.mp3)
 uploads/             media added by users
     units/  enemies/  bosses/
-admin/               admin pages only
+admin/               admin pages only (dashboard, users, enemies, items)
+api/index.php        Vercel only: runs the pages on Vercel
+vercel.json          Vercel settings (runtime, region, which addresses go to api/index.php)
+.vercelignore        files Vercel doesn't get (db_config.php, dota.sql ...)
 dota.sql             database export (tables + starting data)
 ```
 

@@ -208,7 +208,7 @@
                 <tr>
                     <td>
                         <?php if($enemy["image"] != ""){ ?>
-                            <img class="thumb" src="../<?php echo htmlspecialchars($enemy["image"]); ?>" alt="">
+                            <img class="thumb" src="<?php echo htmlspecialchars(imageUrl($enemy["image"], $root)); ?>" alt="">
                         <?php } else { ?>
                             <span class="hint">none</span>
                         <?php } ?>
@@ -298,7 +298,7 @@
 
                 <label for="image">Picture (JPG, PNG, GIF or WEBP, max <?php echo $config["upload_max_kb"] / 1024; ?> MB)</label><br>
                 <?php if($form["image"] != ""){ ?>
-                    <img class="thumb" src="../<?php echo htmlspecialchars($form["image"]); ?>" alt=""><br>
+                    <img class="thumb" src="<?php echo htmlspecialchars(imageUrl($form["image"], $root)); ?>" alt=""><br>
                     <input type="checkbox" id="remove_image" name="remove_image">
                     <label for="remove_image">Remove this picture</label><br>
                 <?php } ?>

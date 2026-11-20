@@ -1,0 +1,8 @@
+# files Vercel doesn't need (and shouldn't show to anyone)
+includes/db_config.php
+dota.sql
+README.md
+.vscode
+uploads/enemies/*
+uploads/bosses/*
+uploads/units/*

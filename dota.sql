@@ -95,11 +95,12 @@ CREATE TABLE IF NOT EXISTS enemy_templates (
     base_defense  INT         NOT NULL CHECK (base_defense >= 0),
     base_speed    INT         NOT NULL CHECK (base_speed >= 0),
     xp_reward     INT         NOT NULL DEFAULT 0 CHECK (xp_reward >= 0),
-    image         VARCHAR(100)                          -- uploaded picture, like uploads/bosses/boss_1a2b3c4d.png
+    image         VARCHAR(255)                          -- uploaded picture: uploads/bosses/boss_1a2b3c4d.png or a Supabase Storage web address
 );
 
 -- for databases made before the image column existed (safe to run again)
-ALTER TABLE enemy_templates ADD COLUMN IF NOT EXISTS image VARCHAR(100);
+ALTER TABLE enemy_templates ADD COLUMN IF NOT EXISTS image VARCHAR(255);
+ALTER TABLE enemy_templates ALTER COLUMN image TYPE VARCHAR(255);
 
 
 -- battle_results: one row for every finished battle, score = xp_gained (week 6, records.php)
@@ -111,6 +112,13 @@ CREATE TABLE IF NOT EXISTS battle_results (
     rounds       INT         NOT NULL,
     xp_gained    INT         NOT NULL DEFAULT 0,
     finished_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- sessions: only used on Vercel (see includes/session_db.php), XAMPP keeps sessions in files
+CREATE TABLE IF NOT EXISTS sessions (
+    session_id   VARCHAR(128) PRIMARY KEY,
+    data         TEXT         NOT NULL DEFAULT '',
+    updated_at   TIMESTAMPTZ  NOT NULL DEFAULT now()
 );
 
 -- indexes for faster lookups
@@ -129,6 +137,7 @@ ALTER TABLE item_templates  ENABLE ROW LEVEL SECURITY;
 ALTER TABLE inventory       ENABLE ROW LEVEL SECURITY;
 ALTER TABLE enemy_templates ENABLE ROW LEVEL SECURITY;
 ALTER TABLE battle_results  ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sessions        ENABLE ROW LEVEL SECURITY;
 
 -- ======================= PART 2: STARTING DATA =======================
 
