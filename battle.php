@@ -25,7 +25,7 @@
             }
 
             if(count($party) == 0 || count($enemyList) == 0){
-                exit("This save has no party, or there are no enemies (did you run database/seed.sql?)");
+                exit("This save has no party, or there are no enemies (did you run dota.sql?)");
             }
 
             $floor = (int) $save["current_floor"];

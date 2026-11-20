@@ -285,6 +285,13 @@
         include("includes/db.php");
         include("includes/queries.php");
 
+        // the save was deleted somewhere else (another tab or browser) while fighting
+        if(!getSave($battle["save_id"], $_SESSION["account_id"])){
+            unset($_SESSION["battle"]);
+            echo json_encode(["error" => "This save was deleted. Go back to your saves."]);
+            exit();
+        }
+
         $xpGained = 0;
 
         // a win saves xp, levels, the drop and the next floor

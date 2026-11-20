@@ -9,6 +9,90 @@ let popupShown = false;  // the victory / game over box is already showing
 
 const commands = ["attack", "skill", "item", "run"];
 
+// ---------- sounds and hit effects ----------
+
+// plays assets/sounds/<name>.mp3, if the file is missing nothing happens
+function playSound(name) {
+    const sound = new Audio("assets/sounds/" + name + ".mp3");
+    sound.volume = 0.5;
+    sound.play().catch(function () {});
+}
+
+// shakes a party or enemy box (box id like "party-0" or "enemy-2")
+function shake(id) {
+    const box = document.getElementById(id);
+    box.style.animation = "shake 0.4s";
+    setTimeout(function () {
+        box.style.animation = "";
+    }, 400);
+}
+
+// the "-25" or "+30" that floats up over a box
+function floatNumber(id, text, color) {
+    const box = document.getElementById(id);
+    const number = document.createElement("div");
+
+    number.className = "float-number";
+    number.innerText = text;
+    number.style.color = color;
+    box.appendChild(number);
+
+    setTimeout(function () {
+        number.remove();
+    }, 1000);
+}
+
+// saves everyone's hp so we can compare after the turn
+function getHps() {
+    const hps = { party: [], enemies: [] };
+    for (let i = 0; i < battle.party.length; i++) {
+        hps.party.push(battle.party[i].current_hp);
+    }
+    for (let i = 0; i < battle.enemies.length; i++) {
+        hps.enemies.push(battle.enemies[i].current_hp);
+    }
+    return hps;
+}
+
+// compares the old hp to the new hp: shake + numbers + sound
+function showEffects(oldHps, newLog) {
+    let gotHit = false;
+    let gotHealed = false;
+
+    const groups = [["party", battle.party], ["enemies", battle.enemies]];
+    for (let g = 0; g < groups.length; g++) {
+        const name = groups[g][0];
+        const list = groups[g][1];
+        const prefix = name == "party" ? "party-" : "enemy-";
+
+        for (let i = 0; i < list.length; i++) {
+            const change = list[i].current_hp - oldHps[name][i];
+
+            if (change < 0) {
+                shake(prefix + i);
+                floatNumber(prefix + i, change, "red");
+                gotHit = true;
+            } else if (change > 0) {
+                floatNumber(prefix + i, "+" + change, "lightgreen");
+                gotHealed = true;
+            }
+        }
+    }
+
+    // only one sound at a time
+    if (battle.result == "won") {
+        playSound("victory");
+    } else if (battle.result == "lost") {
+        playSound("defeat");
+    } else if (newLog.join(" ").includes("Critical hit!")) {
+        playSound("crit");
+    } else if (gotHit) {
+        playSound("hit");
+    } else if (gotHealed) {
+        playSound("heal");
+    }
+}
+
 // the party member whose turn it is
 function actor() {
     return battle.party[battle.order[battle.turn]];
@@ -188,7 +272,10 @@ function sendAction(command) {
             return;
         }
 
+        const oldHps = getHps();
         battle = data.battle;
+        showEffects(oldHps, data.new_log);
+
         for (let i = 0; i < data.new_log.length; i++) {
             addLog(data.new_log[i]);
         }
@@ -240,6 +327,7 @@ function chooseCommand(number) {
 
     selected = number;
     usingSkill = -1;
+    playSound("select");
 
     if (commands[number] == "attack") {
         mode = "target";
@@ -262,6 +350,7 @@ function chooseSkill(number) {
     const unit = actor();
     const skill = skills[unit.unit_class][number];
     skillSelected = number;
+    playSound("select");
 
     if (unit.level < skill.level) {
         updateScreen();
@@ -390,6 +479,11 @@ document.addEventListener("keydown", function (event) {
             document.getElementById("continue-form").submit();
         }
         return;
+    }
+
+    // little click when moving around the menus
+    if (mode == "menu" || mode == "skills" || mode == "target" || mode == "ally") {
+        playSound("select");
     }
 
     updateScreen();

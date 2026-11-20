@@ -7,8 +7,9 @@
 
     include($dbConfigFile);
 
-    $conn = pg_connect("host='$dbHost' port='$dbPort' dbname='$dbName' user='$dbUser' password='$dbPassword' sslmode=require");
+    // the @ hides the php warning (it shows the database address), we show our own message below
+    $conn = @pg_connect("host='$dbHost' port='$dbPort' dbname='$dbName' user='$dbUser' password='$dbPassword' sslmode=require");
 
     if(!$conn){
-        exit("Database connection failed");
+        exit("Can't connect to the database right now. Please try again later.");
     }
