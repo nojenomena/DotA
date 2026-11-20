@@ -181,16 +181,17 @@
 ?>
     <div id="container">
         <h2>Enemies and Bosses</h2>
-        <p class="hint" style="margin-bottom: 15px;"><a href="index.php">Back to dashboard</a></p>
+        <p class="hint mb-3"><a href="index.php">Back to dashboard</a></p>
 
         <?php if($done != ""){ ?>
-            <p class="success"><?php echo $done; ?></p>
+            <div class="alert alert-success py-2"><?php echo $done; ?></div>
         <?php } ?>
         <?php foreach($errors as $error){ ?>
-            <p class="error"><?php echo $error; ?></p>
+            <div class="alert alert-danger py-2"><?php echo $error; ?></div>
         <?php } ?>
 
-        <table border="1" class="item-table">
+        <div class="table-responsive">
+        <table class="table table-bordered table-sm align-middle">
             <tr>
                 <th>Picture</th>
                 <th>Name</th>
@@ -242,16 +243,17 @@
                         ?>
                     </td>
                     <td>
-                        <button class="small-button" onclick="window.location.href='enemies.php?edit=<?php echo $enemy["enemy_id"]; ?>#form'">Edit</button>
+                        <button class="btn btn-sm btn-outline-light" onclick="window.location.href='enemies.php?edit=<?php echo $enemy["enemy_id"]; ?>#form'">Edit</button>
                         <form method="POST" action="enemies.php" style="display: inline;" onsubmit="return confirm('Delete this enemy?');">
                             <input type="hidden" name="enemy_id" value="<?php echo $enemy["enemy_id"]; ?>">
                             <input type="hidden" name="delete" value="1">
-                            <button type="submit" class="small-button delete-button">Delete</button>
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
                         </form>
                     </td>
                 </tr>
             <?php } ?>
         </table>
+        </div>
         <p class="hint" style="margin-top: 5px;">Floor "3+" = can show up from floor 3. Stats are for floor 1 and grow every floor.</p>
 
         <!-- add / edit form -->
@@ -266,49 +268,55 @@
             <form method="POST" action="enemies.php" enctype="multipart/form-data">
                 <input type="hidden" name="enemy_id" value="<?php echo $editId; ?>">
 
-                <label for="enemy_name">Name</label><br>
-                <input type="text" id="enemy_name" name="enemy_name" maxlength="50" required value="<?php echo htmlspecialchars($form["enemy_name"]); ?>"><br>
+                <label for="enemy_name" class="form-label">Name</label>
+                <input type="text" class="form-control mb-3" id="enemy_name" name="enemy_name" maxlength="50" required value="<?php echo htmlspecialchars($form["enemy_name"]); ?>">
                 <?php if($editId > 0){ ?>
-                    <p class="hint">Changing the name removes its special skill (skills are found by name in config.php).</p>
+                    <p class="hint mb-3" style="margin-top: -10px;">Changing the name removes its special skill (skills are found by name in config.php).</p>
                 <?php } ?>
 
-                <input type="checkbox" id="is_boss" name="is_boss" <?php if($form["is_boss"]){ echo "checked"; } ?>>
-                <label for="is_boss">Boss</label><br>
+                <div class="form-check mb-3">
+                    <input type="checkbox" class="form-check-input" id="is_boss" name="is_boss" <?php if($form["is_boss"]){ echo "checked"; } ?>>
+                    <label for="is_boss" class="form-check-label">Boss</label>
+                </div>
 
-                <label for="boss_floor">Boss floor (only for bosses)</label><br>
-                <input type="number" id="boss_floor" name="boss_floor" min="0" max="<?php echo $config["total_floors"]; ?>" step="<?php echo $config["boss_every"]; ?>" value="<?php echo (int) $form["boss_floor"]; ?>"><br>
+                <label for="boss_floor" class="form-label">Boss floor (only for bosses)</label>
+                <input type="number" class="form-control mb-3" id="boss_floor" name="boss_floor" min="0" max="<?php echo $config["total_floors"]; ?>" step="<?php echo $config["boss_every"]; ?>" value="<?php echo (int) $form["boss_floor"]; ?>">
 
-                <label for="min_floor">First floor it shows up on (regular enemies)</label><br>
-                <input type="number" id="min_floor" name="min_floor" min="1" max="<?php echo $config["total_floors"]; ?>" value="<?php echo (int) $form["min_floor"]; ?>"><br>
+                <label for="min_floor" class="form-label">First floor it shows up on (regular enemies)</label>
+                <input type="number" class="form-control mb-3" id="min_floor" name="min_floor" min="1" max="<?php echo $config["total_floors"]; ?>" value="<?php echo (int) $form["min_floor"]; ?>">
 
-                <label for="base_hp">HP</label><br>
-                <input type="number" id="base_hp" name="base_hp" min="1" max="9999" required value="<?php echo (int) $form["base_hp"]; ?>"><br>
+                <label for="base_hp" class="form-label">HP</label>
+                <input type="number" class="form-control mb-3" id="base_hp" name="base_hp" min="1" max="9999" required value="<?php echo (int) $form["base_hp"]; ?>">
 
-                <label for="base_attack">Attack</label><br>
-                <input type="number" id="base_attack" name="base_attack" min="0" max="999" required value="<?php echo (int) $form["base_attack"]; ?>"><br>
+                <label for="base_attack" class="form-label">Attack</label>
+                <input type="number" class="form-control mb-3" id="base_attack" name="base_attack" min="0" max="999" required value="<?php echo (int) $form["base_attack"]; ?>">
 
-                <label for="base_defense">Defense</label><br>
-                <input type="number" id="base_defense" name="base_defense" min="0" max="999" required value="<?php echo (int) $form["base_defense"]; ?>"><br>
+                <label for="base_defense" class="form-label">Defense</label>
+                <input type="number" class="form-control mb-3" id="base_defense" name="base_defense" min="0" max="999" required value="<?php echo (int) $form["base_defense"]; ?>">
 
-                <label for="base_speed">Speed</label><br>
-                <input type="number" id="base_speed" name="base_speed" min="0" max="999" required value="<?php echo (int) $form["base_speed"]; ?>"><br>
+                <label for="base_speed" class="form-label">Speed</label>
+                <input type="number" class="form-control mb-3" id="base_speed" name="base_speed" min="0" max="999" required value="<?php echo (int) $form["base_speed"]; ?>">
 
-                <label for="xp_reward">XP reward</label><br>
-                <input type="number" id="xp_reward" name="xp_reward" min="0" max="9999" required value="<?php echo (int) $form["xp_reward"]; ?>"><br>
+                <label for="xp_reward" class="form-label">XP reward</label>
+                <input type="number" class="form-control mb-3" id="xp_reward" name="xp_reward" min="0" max="9999" required value="<?php echo (int) $form["xp_reward"]; ?>">
 
-                <label for="image">Picture (JPG, PNG, GIF or WEBP, max <?php echo $config["upload_max_kb"] / 1024; ?> MB)</label><br>
+                <label for="image" class="form-label">Picture (JPG, PNG, GIF or WEBP, max <?php echo $config["upload_max_kb"] / 1024; ?> MB)</label>
                 <?php if($form["image"] != ""){ ?>
-                    <img class="thumb" src="<?php echo htmlspecialchars(imageUrl($form["image"], $root)); ?>" alt=""><br>
-                    <input type="checkbox" id="remove_image" name="remove_image">
-                    <label for="remove_image">Remove this picture</label><br>
+                    <div class="d-flex align-items-center gap-3 mb-2">
+                        <img class="thumb" src="<?php echo htmlspecialchars(imageUrl($form["image"], $root)); ?>" alt="">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="remove_image" name="remove_image">
+                            <label for="remove_image" class="form-check-label">Remove this picture</label>
+                        </div>
+                    </div>
                 <?php } ?>
-                <input type="file" id="image" name="image" accept="image/jpeg,image/png,image/gif,image/webp"><br>
+                <input type="file" class="form-control mb-3" id="image" name="image" accept="image/jpeg,image/png,image/gif,image/webp">
 
                 <?php if($editId > 0){ ?>
-                    <button type="submit">Save Changes</button>
-                    <button type="button" onclick="window.location.href='enemies.php'">Cancel</button>
+                    <button type="submit" class="btn btn-light">Save Changes</button>
+                    <a class="btn btn-outline-light" href="enemies.php">Cancel</a>
                 <?php } else { ?>
-                    <button type="submit">Add Enemy</button>
+                    <button type="submit" class="btn btn-light">Add Enemy</button>
                 <?php } ?>
             </form>
         </div>

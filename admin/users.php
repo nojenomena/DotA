@@ -52,16 +52,17 @@
 ?>
     <div id="container">
         <h2>Users</h2>
-        <p class="hint" style="margin-bottom: 15px;"><a href="index.php">Back to dashboard</a></p>
+        <p class="hint mb-3"><a href="index.php">Back to dashboard</a></p>
 
         <?php if($done != ""){ ?>
-            <p class="success"><?php echo $done; ?></p>
+            <div class="alert alert-success py-2"><?php echo $done; ?></div>
         <?php } ?>
         <?php foreach($errors as $error){ ?>
-            <p class="error"><?php echo $error; ?></p>
+            <div class="alert alert-danger py-2"><?php echo $error; ?></div>
         <?php } ?>
 
-        <table border="1" class="item-table">
+        <div class="table-responsive">
+        <table class="table table-bordered table-sm align-middle">
             <tr>
                 <th>ID</th>
                 <th>Username</th>
@@ -87,21 +88,22 @@
                                 <input type="hidden" name="account_id" value="<?php echo $account["account_id"]; ?>">
                                 <?php if($account["role"] == "admin"){ ?>
                                     <input type="hidden" name="role" value="user">
-                                    <button type="submit" class="small-button">Make User</button>
+                                    <button type="submit" class="btn btn-sm btn-outline-light">Make User</button>
                                 <?php } else { ?>
                                     <input type="hidden" name="role" value="admin">
-                                    <button type="submit" class="small-button">Make Admin</button>
+                                    <button type="submit" class="btn btn-sm btn-outline-light">Make Admin</button>
                                 <?php } ?>
                             </form>
                             <form method="POST" action="users.php" style="display: inline;" onsubmit="return confirm('Delete this account and all its saves?');">
                                 <input type="hidden" name="account_id" value="<?php echo $account["account_id"]; ?>">
                                 <input type="hidden" name="delete" value="1">
-                                <button type="submit" class="small-button delete-button">Delete</button>
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
                             </form>
                         <?php } ?>
                     </td>
                 </tr>
             <?php } ?>
         </table>
+        </div>
     </div>
 <?php include("../includes/footer.php"); ?>

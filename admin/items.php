@@ -116,16 +116,17 @@
 ?>
     <div id="container">
         <h2>Items</h2>
-        <p class="hint" style="margin-bottom: 15px;"><a href="index.php">Back to dashboard</a></p>
+        <p class="hint mb-3"><a href="index.php">Back to dashboard</a></p>
 
         <?php if($done != ""){ ?>
-            <p class="success"><?php echo $done; ?></p>
+            <div class="alert alert-success py-2"><?php echo $done; ?></div>
         <?php } ?>
         <?php foreach($errors as $error){ ?>
-            <p class="error"><?php echo $error; ?></p>
+            <div class="alert alert-danger py-2"><?php echo $error; ?></div>
         <?php } ?>
 
-        <table border="1" class="item-table">
+        <div class="table-responsive">
+        <table class="table table-bordered table-sm align-middle">
             <tr>
                 <th>Name</th>
                 <th>Slot</th>
@@ -153,16 +154,17 @@
                     <td><?php echo $item["min_floor"]; ?>+</td>
                     <td><?php echo $item["owned"]; ?></td>
                     <td>
-                        <button class="small-button" onclick="window.location.href='items.php?edit=<?php echo $item["item_id"]; ?>#form'">Edit</button>
+                        <button class="btn btn-sm btn-outline-light" onclick="window.location.href='items.php?edit=<?php echo $item["item_id"]; ?>#form'">Edit</button>
                         <form method="POST" action="items.php" style="display: inline;" onsubmit="return confirm('Delete this item?');">
                             <input type="hidden" name="item_id" value="<?php echo $item["item_id"]; ?>">
                             <input type="hidden" name="delete" value="1">
-                            <button type="submit" class="small-button delete-button">Delete</button>
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
                         </form>
                     </td>
                 </tr>
             <?php } ?>
         </table>
+        </div>
         <p class="hint" style="margin-top: 5px;">Bonuses multiply the stat: 1.20 = +20%, 0.95 = -5%. Floor "4+" = can drop from floor 4.</p>
 
         <!-- add / edit form -->
@@ -176,39 +178,39 @@
             <form method="POST" action="items.php">
                 <input type="hidden" name="item_id" value="<?php echo $editId; ?>">
 
-                <label for="item_name">Name</label><br>
-                <input type="text" id="item_name" name="item_name" maxlength="50" required value="<?php echo htmlspecialchars($form["item_name"]); ?>"><br>
+                <label for="item_name" class="form-label">Name</label>
+                <input type="text" class="form-control mb-3" id="item_name" name="item_name" maxlength="50" required value="<?php echo htmlspecialchars($form["item_name"]); ?>">
 
-                <label for="slot_type">Slot</label><br>
-                <select id="slot_type" name="slot_type">
+                <label for="slot_type" class="form-label">Slot</label>
+                <select class="form-select mb-3" id="slot_type" name="slot_type">
                     <?php foreach($slots as $slot){ ?>
                         <option value="<?php echo $slot; ?>" <?php if($form["slot_type"] == $slot){ echo "selected"; } ?>><?php echo ucfirst($slot); ?></option>
                     <?php } ?>
-                </select><br>
+                </select>
 
-                <label for="rarity">Rarity</label><br>
-                <select id="rarity" name="rarity">
+                <label for="rarity" class="form-label">Rarity</label>
+                <select class="form-select mb-3" id="rarity" name="rarity">
                     <?php foreach($rarities as $rarity){ ?>
                         <option value="<?php echo $rarity; ?>" <?php if($form["rarity"] == $rarity){ echo "selected"; } ?>><?php echo ucfirst($rarity); ?></option>
                     <?php } ?>
-                </select><br>
+                </select>
 
                 <?php foreach($stats as $key => $label){ ?>
-                    <label for="<?php echo $key; ?>"><?php echo $label; ?> bonus</label><br>
-                    <input type="number" id="<?php echo $key; ?>" name="<?php echo $key; ?>" min="0.5" max="3" step="0.01" required value="<?php echo htmlspecialchars($form[$key]); ?>"><br>
+                    <label for="<?php echo $key; ?>" class="form-label"><?php echo $label; ?> bonus</label>
+                    <input type="number" class="form-control mb-3" id="<?php echo $key; ?>" name="<?php echo $key; ?>" min="0.5" max="3" step="0.01" required value="<?php echo htmlspecialchars($form[$key]); ?>">
                 <?php } ?>
 
-                <label for="min_floor">First floor it can drop on</label><br>
-                <input type="number" id="min_floor" name="min_floor" min="1" max="<?php echo $config["total_floors"]; ?>" required value="<?php echo (int) $form["min_floor"]; ?>"><br>
+                <label for="min_floor" class="form-label">First floor it can drop on</label>
+                <input type="number" class="form-control mb-3" id="min_floor" name="min_floor" min="1" max="<?php echo $config["total_floors"]; ?>" required value="<?php echo (int) $form["min_floor"]; ?>">
 
-                <label for="description">Description</label><br>
-                <input type="text" id="description" name="description" maxlength="200" value="<?php echo htmlspecialchars($form["description"]); ?>"><br>
+                <label for="description" class="form-label">Description</label>
+                <input type="text" class="form-control mb-3" id="description" name="description" maxlength="200" value="<?php echo htmlspecialchars($form["description"]); ?>">
 
                 <?php if($editId > 0){ ?>
-                    <button type="submit">Save Changes</button>
-                    <button type="button" onclick="window.location.href='items.php'">Cancel</button>
+                    <button type="submit" class="btn btn-light">Save Changes</button>
+                    <a class="btn btn-outline-light" href="items.php">Cancel</a>
                 <?php } else { ?>
-                    <button type="submit">Add Item</button>
+                    <button type="submit" class="btn btn-light">Add Item</button>
                 <?php } ?>
             </form>
         </div>

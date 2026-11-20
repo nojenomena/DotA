@@ -20,16 +20,15 @@
     include("includes/nav.php");
 ?>
     <div id="container">
-        <div id="top-bar">
+        <div id="top-bar" class="d-flex flex-wrap align-items-baseline gap-3">
             <h2>Records</h2>
         </div>
 
-        <h3>Your saves</h3>
-        <br>
+        <h3 class="mb-3">Your saves</h3>
         <?php if(count($totals) == 0){ ?>
             <p class="small-text">No saves yet.</p>
         <?php } else { ?>
-            <table class="item-table" border="1">
+            <div class="table-responsive"><table class="table table-bordered table-sm align-middle">
                 <tr>
                     <th>Slot</th>
                     <th>Highest floor</th>
@@ -48,16 +47,14 @@
                         <td><b><?php echo $row["total_score"]; ?></b></td>
                     </tr>
                 <?php } ?>
-            </table>
+            </table></div>
         <?php } ?>
 
-        <br><br>
-        <h3>Last <?php echo count($battles); ?> battles</h3>
-        <br>
+        <h3 class="mt-4 mb-3">Last <?php echo count($battles); ?> battles</h3>
         <?php if(count($battles) == 0){ ?>
             <p class="small-text">No battles yet. Go climb the tower!</p>
         <?php } else { ?>
-            <table class="item-table" border="1">
+            <div class="table-responsive"><table class="table table-bordered table-sm align-middle">
                 <tr>
                     <th>Date</th>
                     <th>Slot</th>
@@ -76,7 +73,7 @@
                         <td><?php echo $row["xp_gained"]; ?></td>
                     </tr>
                 <?php } ?>
-            </table>
+            </table></div>
         <?php } ?>
     </div>
 <?php include("includes/footer.php"); ?>

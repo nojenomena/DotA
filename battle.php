@@ -60,80 +60,83 @@
 ?>
     <div id="container">
 
-        <div id="top-bar">
+        <div id="top-bar" class="d-flex flex-wrap align-items-baseline gap-3">
             <h2>Floor <?php echo $battle["floor"]; ?> / <?php echo $config["total_floors"]; ?></h2>
-            &nbsp;&nbsp;
             <span id="round">Round <?php echo $battle["round"]; ?></span>
-            <button id="pause-button" onclick="pauseGame()">Pause</button>
+            <button id="pause-button" class="btn btn-sm btn-outline-light ms-auto" onclick="pauseGame()">Pause</button>
         </div>
 
-        <!-- party on the left -->
-        <div id="party-side">
-            <?php foreach($battle["party"] as $i => $unit){ ?>
-                <div class="slot" id="party-<?php echo $i; ?>" onclick="clickAlly(<?php echo $i; ?>)">
-                    <!-- class picture from config.php, or the first letter if the file isn't there -->
-                    <?php $picture = $config["classes"][$unit["unit_class"]]["image"]; ?>
-                    <?php if(file_exists($picture)){ ?>
-                        <img class="sprite" src="<?php echo $picture; ?>" alt="<?php echo $config["classes"][$unit["unit_class"]]["label"]; ?>">
-                    <?php } else { ?>
-                        <div class="sprite"><?php echo strtoupper(substr($unit["unit_class"], 0, 1)); ?></div>
-                    <?php } ?>
-                    <b><?php echo htmlspecialchars($unit["unit_name"]); ?></b> - Lv <?php echo $unit["level"]; ?><br>
-                    <span class="small-text"><?php echo $config["classes"][$unit["unit_class"]]["label"]; ?></span>
-                    <div class="hp-bar-back"><div class="hp-bar" id="party-bar-<?php echo $i; ?>"></div></div>
-                    <span class="hp-text" id="party-hp-<?php echo $i; ?>"></span>
-                    <span class="small-text" id="party-status-<?php echo $i; ?>"></span>
-                </div>
-            <?php } ?>
-        </div>
-
-        <!-- enemies on the right, click one to attack it -->
-        <div id="enemy-side">
-            <?php foreach($battle["enemies"] as $i => $enemy){ ?>
-                <div class="slot enemy-slot" id="enemy-<?php echo $i; ?>" onclick="clickEnemy(<?php echo $i; ?>)">
-                    <?php if(!empty($enemy["image"])){ ?>
-                        <img class="sprite" src="<?php echo htmlspecialchars($enemy["image"]); ?>" alt="<?php echo htmlspecialchars($enemy["name"]); ?>">
-                    <?php } else { ?>
-                        <div class="sprite"><?php echo strtoupper(substr($enemy["name"], 0, 1)); ?></div>
-                    <?php } ?>
-                    <b><?php echo htmlspecialchars($enemy["name"]); ?></b>
-                    <?php if($enemy["is_boss"]){ ?><span style="color: red;">[BOSS]</span><?php } ?>
-                    <br>
-                    <div class="hp-bar-back"><div class="hp-bar" id="enemy-bar-<?php echo $i; ?>"></div></div>
-                    <span class="hp-text" id="enemy-hp-<?php echo $i; ?>"></span>
-                    <span class="small-text" id="enemy-status-<?php echo $i; ?>"></span>
-                </div>
-            <?php } ?>
-        </div>
-
-        <div class="clear"></div>
-        <br>
-
-        <!-- log on the left, menu on the right -->
-        <div id="battle-log">
-            <?php foreach($battle["log"] as $line){ ?>
-                <div><?php echo htmlspecialchars($line); ?></div>
-            <?php } ?>
-        </div>
-
-        <div id="menu-box">
-            <p id="message"></p>
-            <p id="timer"></p>
-
-            <div id="menu">
-                <button class="command" id="cmd-0" onclick="chooseCommand(0)">Attack</button>
-                <button class="command" id="cmd-1" onclick="chooseCommand(1)">Skill</button><br>
-                <button class="command" id="cmd-2" onclick="chooseCommand(2)">Item</button>
-                <button class="command" id="cmd-3" onclick="chooseCommand(3)">Run</button>
+        <!-- party on the left, enemies on the right (on a phone: party on top) -->
+        <div class="row g-3">
+            <div id="party-side" class="col-md-6">
+                <?php foreach($battle["party"] as $i => $unit){ ?>
+                    <div class="slot" id="party-<?php echo $i; ?>" onclick="clickAlly(<?php echo $i; ?>)">
+                        <!-- class picture from config.php, or the first letter if the file isn't there -->
+                        <?php $picture = $config["classes"][$unit["unit_class"]]["image"]; ?>
+                        <?php if(file_exists($picture)){ ?>
+                            <img class="sprite" src="<?php echo $picture; ?>" alt="<?php echo $config["classes"][$unit["unit_class"]]["label"]; ?>">
+                        <?php } else { ?>
+                            <div class="sprite"><?php echo strtoupper(substr($unit["unit_class"], 0, 1)); ?></div>
+                        <?php } ?>
+                        <b><?php echo htmlspecialchars($unit["unit_name"]); ?></b> - Lv <?php echo $unit["level"]; ?><br>
+                        <span class="small-text"><?php echo $config["classes"][$unit["unit_class"]]["label"]; ?></span>
+                        <div class="hp-bar-back"><div class="hp-bar" id="party-bar-<?php echo $i; ?>"></div></div>
+                        <span class="hp-text" id="party-hp-<?php echo $i; ?>"></span>
+                        <span class="small-text" id="party-status-<?php echo $i; ?>"></span>
+                    </div>
+                <?php } ?>
             </div>
 
-            <!-- battle.js puts the skill buttons here -->
-            <div id="skill-list" style="display: none;"></div>
+            <!-- enemies on the right, click one to attack it -->
+            <div id="enemy-side" class="col-md-6">
+                <?php foreach($battle["enemies"] as $i => $enemy){ ?>
+                    <div class="slot enemy-slot" id="enemy-<?php echo $i; ?>" onclick="clickEnemy(<?php echo $i; ?>)">
+                        <?php if(!empty($enemy["image"])){ ?>
+                            <img class="sprite" src="<?php echo htmlspecialchars($enemy["image"]); ?>" alt="<?php echo htmlspecialchars($enemy["name"]); ?>">
+                        <?php } else { ?>
+                            <div class="sprite"><?php echo strtoupper(substr($enemy["name"], 0, 1)); ?></div>
+                        <?php } ?>
+                        <b><?php echo htmlspecialchars($enemy["name"]); ?></b>
+                        <?php if($enemy["is_boss"]){ ?><span style="color: red;">[BOSS]</span><?php } ?>
+                        <br>
+                        <div class="hp-bar-back"><div class="hp-bar" id="enemy-bar-<?php echo $i; ?>"></div></div>
+                        <span class="hp-text" id="enemy-hp-<?php echo $i; ?>"></span>
+                        <span class="small-text" id="enemy-status-<?php echo $i; ?>"></span>
+                    </div>
+                <?php } ?>
+            </div>
 
-            <p class="hint" style="margin-top: 8px;">WASD / Arrows = move, Enter / Space = choose, Esc = back, P = pause</p>
         </div>
 
-        <div class="clear"></div>
+        <!-- log on the left, menu on the right (on a phone: menu first, then the log) -->
+        <div class="row g-3 mt-1">
+            <div class="col-md-7 order-2 order-md-1">
+                <div id="battle-log">
+                    <?php foreach($battle["log"] as $line){ ?>
+                        <div><?php echo htmlspecialchars($line); ?></div>
+                    <?php } ?>
+                </div>
+            </div>
+
+            <div class="col-md-5 order-1 order-md-2">
+                <div id="menu-box">
+                    <p id="message"></p>
+                    <p id="timer"></p>
+
+                    <div id="menu">
+                        <button class="command" id="cmd-0" onclick="chooseCommand(0)">Attack</button>
+                        <button class="command" id="cmd-1" onclick="chooseCommand(1)">Skill</button><br>
+                        <button class="command" id="cmd-2" onclick="chooseCommand(2)">Item</button>
+                        <button class="command" id="cmd-3" onclick="chooseCommand(3)">Run</button>
+                    </div>
+
+                    <!-- battle.js puts the skill buttons here -->
+                    <div id="skill-list" style="display: none;"></div>
+
+                    <p class="hint" style="margin-top: 8px;">WASD / Arrows = move, Enter / Space = choose, Esc = back, P = pause</p>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- big box in the middle: floor intro, victory, game over (battle.js shows it) -->
@@ -145,11 +148,11 @@
             <div id="popup-buttons" style="display: none;">
                 <form method="POST" action="battle.php" id="continue-form" style="display: inline;">
                     <input type="hidden" name="save_id" value="<?php echo $battle["save_id"]; ?>">
-                    <button type="submit" id="continue-button">Next Floor</button>
+                    <button type="submit" id="continue-button" class="btn btn-light">Next Floor</button>
                 </form>
-                <button onclick="window.location.href='party.php?save=<?php echo $battle["save_id"]; ?>'">Party</button>
-                <button onclick="window.location.href='records.php'">Records</button>
-                <button onclick="window.location.href='saves.php'">Back to saves</button>
+                <a class="btn btn-outline-light" href="party.php?save=<?php echo $battle["save_id"]; ?>">Party</a>
+                <a class="btn btn-outline-light" href="records.php">Records</a>
+                <a class="btn btn-outline-light" href="saves.php">Back to saves</a>
             </div>
 
             <p class="hint" id="popup-hint"></p>
@@ -162,8 +165,8 @@
             <h1>Paused</h1>
             <p>The timer is stopped.</p>
             <div id="pause-buttons">
-                <button id="resume-button" onclick="resumeGame()">Resume</button>
-                <button id="exit-button" onclick="exitBattle()">Exit Battle</button>
+                <button id="resume-button" class="btn btn-outline-light" onclick="resumeGame()">Resume</button>
+                <button id="exit-button" class="btn btn-outline-light" onclick="exitBattle()">Exit Battle</button>
             </div>
             <p class="hint">Exit Battle counts as running away: no XP, you stay on this floor.</p>
             <p class="hint">Esc / P = resume</p>

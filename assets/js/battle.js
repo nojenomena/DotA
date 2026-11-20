@@ -690,8 +690,9 @@ function resumeGame() {
 }
 
 function showPauseButtons() {
-    document.getElementById("resume-button").className = pauseSelected == 0 ? "is-selected" : "";
-    document.getElementById("exit-button").className = pauseSelected == 1 ? "is-selected" : "";
+    // classList.toggle adds or removes only "is-selected", the bootstrap classes stay
+    document.getElementById("resume-button").classList.toggle("is-selected", pauseSelected == 0);
+    document.getElementById("exit-button").classList.toggle("is-selected", pauseSelected == 1);
 }
 
 function exitBattle() {

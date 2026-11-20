@@ -30,54 +30,61 @@
     include("includes/nav.php");
 ?>
     <div id="container">
-        <div id="top-bar">
+        <div id="top-bar" class="d-flex flex-wrap align-items-baseline gap-3">
             <h2>Choose a Save</h2>
         </div>
 
-        <?php for($slot = 1; $slot <= $config["max_save_slots"]; $slot++){ ?>
-            <div class="save-box">
-                <h3>Slot <?php echo $slot; ?></h3>
+        <!-- one column per slot: 3 side by side on a laptop, stacked on a phone -->
+        <div class="row g-3">
+            <?php for($slot = 1; $slot <= $config["max_save_slots"]; $slot++){ ?>
+                <div class="col-md-6 col-lg-4">
+                    <div class="save-box h-100 d-flex flex-column">
+                        <h3>Slot <?php echo $slot; ?></h3>
 
-                <?php if(isset($saves[$slot])){ $save = $saves[$slot]; ?>
-                    <p>
-                        <b>Floor <?php echo $save["current_floor"]; ?> / <?php echo $config["total_floors"]; ?></b>
-                        <?php if($save["is_cleared"] == "t"){ ?><span style="color: yellow;">(Cleared!)</span><?php } ?>
-                    </p>
-                    <p class="small-text">Highest floor: <?php echo $save["highest_floor"]; ?></p>
-                    <br>
+                        <?php if(isset($saves[$slot])){ $save = $saves[$slot]; ?>
+                            <p class="mb-1">
+                                <b>Floor <?php echo $save["current_floor"]; ?> / <?php echo $config["total_floors"]; ?></b>
+                                <?php if($save["is_cleared"] == "t"){ ?><span style="color: yellow;">(Cleared!)</span><?php } ?>
+                            </p>
+                            <p class="small-text mb-3">Highest floor: <?php echo $save["highest_floor"]; ?></p>
 
-                    <?php foreach($save["party"] as $unit){ ?>
-                        <p>
-                            <?php $picture = $config["classes"][$unit["unit_class"]]["image"]; ?>
-                            <?php if(file_exists($picture)){ ?>
-                                <img class="mini-pic" src="<?php echo $picture; ?>" alt="">
+                            <?php foreach($save["party"] as $unit){ ?>
+                                <div class="d-flex align-items-start mb-2">
+                                    <?php $picture = $config["classes"][$unit["unit_class"]]["image"]; ?>
+                                    <?php if(file_exists($picture)){ ?>
+                                        <img class="mini-pic" src="<?php echo $picture; ?>" alt="">
+                                    <?php } ?>
+                                    <div>
+                                        <b><?php echo htmlspecialchars($unit["unit_name"]); ?></b>
+                                        <span class="small-text"><?php echo $config["classes"][$unit["unit_class"]]["label"]; ?> Lv <?php echo $unit["level"]; ?></span><br>
+                                        <span class="small-text">HP <?php echo $unit["current_hp"]; ?>/<?php echo $unit["max_hp"]; ?> - ATK <?php echo $unit["attack"]; ?> - DEF <?php echo $unit["defense"]; ?> - SPD <?php echo $unit["speed"]; ?></span>
+                                    </div>
+                                </div>
                             <?php } ?>
-                            <b><?php echo htmlspecialchars($unit["unit_name"]); ?></b>
-                            <span class="small-text"><?php echo $config["classes"][$unit["unit_class"]]["label"]; ?> Lv <?php echo $unit["level"]; ?></span><br>
-                            <span class="small-text">HP <?php echo $unit["current_hp"]; ?>/<?php echo $unit["max_hp"]; ?> - ATK <?php echo $unit["attack"]; ?> - DEF <?php echo $unit["defense"]; ?> - SPD <?php echo $unit["speed"]; ?></span>
-                        </p>
-                    <?php } ?>
 
-                    <!-- starts a battle for this save -->
-                    <form method="POST" action="battle.php">
-                        <input type="hidden" name="save_id" value="<?php echo $save["save_id"]; ?>">
-                        <button type="submit">Play</button>
-                    </form>
-                    <button onclick="window.location.href='party.php?save=<?php echo $save["save_id"]; ?>'">Party</button>
+                            <!-- buttons at the bottom of the box -->
+                            <div class="mt-auto pt-2">
+                                <!-- starts (or continues) a battle for this save -->
+                                <form method="POST" action="battle.php">
+                                    <input type="hidden" name="save_id" value="<?php echo $save["save_id"]; ?>">
+                                    <button type="submit" class="btn btn-light w-100 mb-2">Play</button>
+                                </form>
+                                <a class="btn btn-outline-light w-100 mb-2" href="party.php?save=<?php echo $save["save_id"]; ?>">Party</a>
 
-                    <form method="POST" onsubmit="return confirm('Delete this save? Your party and items will be gone forever.');">
-                        <input type="hidden" name="delete_save" value="<?php echo $save["save_id"]; ?>">
-                        <button type="submit" class="delete-button">Delete Save</button>
-                    </form>
-                <?php } else { ?>
-                    <p class="small-text" style="text-align: center; margin-top: 80px;">Empty</p>
-                    <button onclick="window.location.href='new_save.php?slot=<?php echo $slot; ?>'" style="margin-top: 70px;">New Game</button>
-                <?php } ?>
-            </div>
-        <?php } ?>
+                                <form method="POST" onsubmit="return confirm('Delete this save? Your party and items will be gone forever.');">
+                                    <input type="hidden" name="delete_save" value="<?php echo $save["save_id"]; ?>">
+                                    <button type="submit" class="btn btn-outline-danger w-100">Delete Save</button>
+                                </form>
+                            </div>
+                        <?php } else { ?>
+                            <p class="small-text text-center my-auto py-5">Empty</p>
+                            <a class="btn btn-light w-100 mt-auto" href="new_save.php?slot=<?php echo $slot; ?>">New Game</a>
+                        <?php } ?>
+                    </div>
+                </div>
+            <?php } ?>
+        </div>
 
-        <div class="clear"></div>
-        <br>
-        <p><a href="index.php">Back to title</a></p>
+        <p class="mt-4"><a href="index.php">Back to title</a></p>
     </div>
 <?php include("includes/footer.php"); ?>
