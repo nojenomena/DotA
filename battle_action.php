@@ -141,6 +141,15 @@
             $newLog[] = "Couldn't get away!";
         }
 
+    } else if($command == "skip"){
+        // the turn timer ran out (battle.js sends this)
+        $newLog[] = $unit["unit_name"] . " took too long and lost their turn!";
+
+    } else if($command == "exit"){
+        // Pause > Exit Battle: counts as running away (no xp, same floor), works on bosses too
+        $battle["result"] = "fled";
+        $newLog[] = "You left the battle.";
+
     } else if($command == "item"){
         // PLACEHOLDER: the turn is not used up
         echo json_encode(["error" => "No items you can use in battle yet."]);

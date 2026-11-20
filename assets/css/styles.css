@@ -326,7 +326,7 @@ a {
 }
 
 /* big box in the middle of the battle (intro, victory, game over) */
-#popup {
+#popup, #pause {
     position: fixed;
     top: 0px;
     left: 0px;
@@ -335,7 +335,7 @@ a {
     background-color: rgba(0, 0, 0, 0.7);
 }
 
-#popup-box {
+#popup-box, #pause-box {
     width: 420px;
     margin: auto;
     margin-top: 120px;
@@ -345,7 +345,7 @@ a {
     border: 3px solid white;
 }
 
-#popup-box h1 {
+#popup-box h1, #pause-box h1 {
     margin-bottom: 15px;
 }
 
@@ -353,11 +353,11 @@ a {
     margin-bottom: 5px;
 }
 
-#popup-buttons {
+#popup-buttons, #pause-buttons {
     margin-top: 15px;
 }
 
-#popup-buttons button {
+#popup-buttons button, #pause-buttons button {
     padding: 6px 10px;
     margin: 3px;
     font-family: 'Trebuchet MS';
@@ -491,4 +491,30 @@ img.sprite {
     margin-right: 8px;
     object-fit: cover;
     background-color: gray;
+}
+
+/* pause button and turn timer */
+#pause-button {
+    float: right;
+    padding: 4px 12px;
+    font-family: 'Trebuchet MS';
+    cursor: pointer;
+}
+
+#pause-buttons button.is-selected {
+    background-color: yellow;
+    font-weight: bold;
+}
+
+#pause-box p {
+    margin-bottom: 5px;
+}
+
+#timer {
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.timer-low {
+    color: red;
 }

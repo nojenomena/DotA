@@ -106,6 +106,7 @@
         "crit_multiplier"  => 1.5,
         "run_chance"       => 75,    // percent, can't run from bosses
         "log_max_lines"    => 50,
+        "turn_seconds"     => 20,    // time to pick a move, then the turn is lost
 
         // PLACEHOLDER: one skill per enemy (by enemy_name in the database)
         // chance = % chance to use it instead of a normal attack, power = damage x attack

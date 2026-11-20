@@ -31,6 +31,8 @@ PHP + PostgreSQL (Supabase) + plain HTML, CSS and JavaScript.
   - **Attack** hits one enemy.
   - **Skill** uses a class skill (unlocks at Lv 2 and Lv 5, some have a cooldown).
   - **Run** has a chance to escape (you stay on the same floor).
+  - Every party member has 20 seconds to pick a move, or they lose their turn. **Pause** stops the timer.
+  - **Exit Battle** (in the pause box) counts as running away. Leaving the page and pressing Play again resumes the same battle.
 - Winning gives XP and sometimes an item. Losing still gives a bit of XP.
 - In the **Party** page you spend upgrade points, equip items, dismiss and recruit members.
 - The **Records** page shows your saves and your last battles. Score = XP gained.
@@ -40,7 +42,8 @@ PHP + PostgreSQL (Supabase) + plain HTML, CSS and JavaScript.
 |-----|--------------|
 | W A S D / Arrow keys | move in the menu, pick a target |
 | Enter / Space | choose, close the floor intro, Next Floor / Try Again |
-| Esc / Backspace | go back |
+| Esc / Backspace | go back (on the main battle menu: pause) |
+| P | pause / resume (Pause > Exit Battle leaves the fight) |
 
 The mouse works too: click a button, click an enemy to attack it, click a party member to heal them.
 

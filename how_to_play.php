@@ -52,6 +52,9 @@
             <li><b>Skill</b> uses a class skill (see below). After using one you wait a few rounds before you can use it again.</li>
             <li><b>Run</b> has a <?php echo $config["run_chance"]; ?>% chance to escape. You can't run from bosses. Running keeps you on the same floor.</li>
             <li>Enemies have skills too, and bosses always attack the party member with the lowest HP.</li>
+            <li>Each party member has <b><?php echo $config["turn_seconds"]; ?> seconds</b> to pick a move. If the time runs out, they lose their turn.</li>
+            <li><b>Pause</b> (or P) stops the timer. From the pause box you can <b>Exit Battle</b>: it counts as running away (no XP, same floor).
+                If you leave the page, pressing Play again brings you back to the same battle.</li>
             <li>You <b>win</b> when every enemy is down. You <b>lose</b> when your whole party is down, then you can try the same floor again.</li>
         </ul>
 
@@ -102,7 +105,8 @@
             <tr><th>Key</th><th>What it does</th></tr>
             <tr><td>W A S D / Arrow keys</td><td>move in the menu, pick a target</td></tr>
             <tr><td>Enter / Space</td><td>choose, close the floor intro, Next Floor / Try Again</td></tr>
-            <tr><td>Esc / Backspace</td><td>go back</td></tr>
+            <tr><td>Esc / Backspace</td><td>go back (on the main battle menu: pause)</td></tr>
+            <tr><td>P</td><td>pause / resume</td></tr>
             <tr><td>Mouse</td><td>click a button, click an enemy to attack it, click a party member to heal them</td></tr>
         </table>
 

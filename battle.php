@@ -12,7 +12,15 @@
 
         $save = getSave((int) $_POST["save_id"], $_SESSION["account_id"]);
 
-        if($save){
+        // this save already has a battle that isn't over: go back to it instead of starting a new one
+        // (so leaving the page can't reset a fight)
+        $unfinished = isset($_SESSION["battle"])
+            && $save
+            && $_SESSION["battle"]["save_id"] == $save["save_id"]
+            && $_SESSION["battle"]["result"] == ""
+            && isset($_SESSION["battle"]["party"][0]["status"]);
+
+        if($save && !$unfinished){
             $party = getParty($save["save_id"]);
             $enemyList = getEnemies();
 
@@ -46,6 +54,7 @@
 
 <?php
     $pageTitle = "Battle - Floor " . $battle["floor"];
+    $hideNavLinks = true;    // no menu links in battle: Pause > Exit Battle is the way out
     include("includes/header.php");
     include("includes/nav.php");
 ?>
@@ -55,7 +64,7 @@
             <h2>Floor <?php echo $battle["floor"]; ?> / <?php echo $config["total_floors"]; ?></h2>
             &nbsp;&nbsp;
             <span id="round">Round <?php echo $battle["round"]; ?></span>
-            <a href="saves.php" style="float: right;">Saves</a>
+            <button id="pause-button" onclick="pauseGame()">Pause</button>
         </div>
 
         <!-- party on the left -->
@@ -109,6 +118,7 @@
 
         <div id="menu-box">
             <p id="message"></p>
+            <p id="timer"></p>
 
             <div id="menu">
                 <button class="command" id="cmd-0" onclick="chooseCommand(0)">Attack</button>
@@ -120,7 +130,7 @@
             <!-- battle.js puts the skill buttons here -->
             <div id="skill-list" style="display: none;"></div>
 
-            <p class="hint" style="margin-top: 8px;">WASD / Arrows = move, Enter / Space = choose, Esc = back</p>
+            <p class="hint" style="margin-top: 8px;">WASD / Arrows = move, Enter / Space = choose, Esc = back, P = pause</p>
         </div>
 
         <div class="clear"></div>
@@ -146,10 +156,25 @@
         </div>
     </div>
 
+    <!-- pause box (battle.js shows it) -->
+    <div id="pause" style="display: none;">
+        <div id="pause-box">
+            <h1>Paused</h1>
+            <p>The timer is stopped.</p>
+            <div id="pause-buttons">
+                <button id="resume-button" onclick="resumeGame()">Resume</button>
+                <button id="exit-button" onclick="exitBattle()">Exit Battle</button>
+            </div>
+            <p class="hint">Exit Battle counts as running away: no XP, you stay on this floor.</p>
+            <p class="hint">Esc / P = resume</p>
+        </div>
+    </div>
+
     <script>
         // battle.js reads this
         let battle = <?php echo json_encode($battle, JSON_HEX_TAG | JSON_HEX_AMP); ?>;
         let skills = <?php echo json_encode($config["skills"], JSON_HEX_TAG | JSON_HEX_AMP); ?>;
+        let turnSeconds = <?php echo (int) $config["turn_seconds"]; ?>;
     </script>
     <script src="assets/js/battle.js"></script>
 <?php include("includes/footer.php"); ?>

@@ -1,11 +1,19 @@
 // battle controls: keyboard (WASD / arrows, Enter / Space, Esc) and mouse
 
 let selected = 0;        // menu button: 0 attack, 1 skill, 2 item, 3 run
-let mode = "menu";       // "menu", "skills", "target", "ally", "wait" or "over"
+let mode = "menu";       // "menu", "skills", "target", "ally", "wait", "intro", "paused" or "over"
 let target = 0;          // which enemy (or party member for heals) is picked
 let skillSelected = 0;   // which skill in the skill list
 let usingSkill = -1;     // the skill being aimed, -1 = normal attack
 let popupShown = false;  // the victory / game over box is already showing
+
+// turn timer and pause
+const playerModes = ["menu", "skills", "target", "ally"];    // the player is picking a move
+let timeLeft = turnSeconds;  // seconds left for this turn (turnSeconds comes from config.php)
+let timerTurn = "";          // which turn the timer is counting, like "3-1" (round 3, 2nd member)
+let pausedFrom = "";         // the mode to go back to after Resume
+let pauseSelected = 0;       // 0 = Resume, 1 = Exit Battle
+let exiting = false;         // Exit Battle was pressed
 
 const commands = ["attack", "skill", "item", "run"];
 
@@ -237,9 +245,14 @@ function updateScreen() {
         message.innerText = "Use " + skills[actor().unit_class][usingSkill].name + " on who? (Esc to go back)";
     } else if (mode == "wait") {
         message.innerText = "...";
+    } else if (mode == "paused") {
+        message.innerText = "Paused.";
     } else {
         message.innerText = "What will " + actor().unit_name + " do?";
     }
+
+    checkNewTurn();
+    showTimer();
 }
 
 function addLog(text) {
@@ -272,6 +285,12 @@ function sendAction(command) {
             return;
         }
 
+        // Exit Battle: the battle is saved as "fled", go back to the saves
+        if (exiting) {
+            window.location.href = "saves.php";
+            return;
+        }
+
         const oldHps = getHps();
         battle = data.battle;
         showEffects(oldHps, data.new_log);
@@ -285,6 +304,7 @@ function sendAction(command) {
         updateScreen();
     })
     .catch(error => {
+        exiting = false;
         mode = "menu";
         usingSkill = -1;
         updateScreen();
@@ -411,8 +431,9 @@ document.addEventListener("keydown", function (event) {
     const right = key == "d" || key == "arrowright";
     const enter = key == "enter" || key == " ";
     const back = key == "escape" || key == "backspace";
+    const pauseKey = key == "p";
 
-    if (!(up || down || left || right || enter || back)) {
+    if (!(up || down || left || right || enter || back || pauseKey)) {
         return;
     }
 
@@ -421,6 +442,29 @@ document.addEventListener("keydown", function (event) {
 
     // holding Enter down shouldn't send many attacks
     if (event.repeat && enter) {
+        return;
+    }
+
+    // pause box: arrows pick Resume / Exit Battle, Esc or P resumes
+    if (mode == "paused") {
+        if (back || pauseKey) {
+            resumeGame();
+        } else if (enter) {
+            if (pauseSelected == 0) {
+                resumeGame();
+            } else {
+                exitBattle();
+            }
+        } else {
+            pauseSelected = pauseSelected == 0 ? 1 : 0;
+            showPauseButtons();
+        }
+        return;
+    }
+
+    // P pauses, and so does Esc on the main menu (there's nothing to go back to there)
+    if (pauseKey || (mode == "menu" && back)) {
+        pauseGame();
         return;
     }
 
@@ -575,6 +619,93 @@ function showEndPopup() {
         button.innerText = "Try Again";
         showPopup("You Escaped", ["You ran away from floor " + battle.floor + "."], true, "Enter = Try Again");
     }
+}
+
+// ---------- turn timer ----------
+
+// a new party member's turn: start again from turnSeconds
+function checkNewTurn() {
+    const turnKey = battle.round + "-" + battle.turn;
+
+    if (turnKey != timerTurn) {
+        timerTurn = turnKey;
+        timeLeft = turnSeconds;
+    }
+}
+
+function showTimer() {
+    const timer = document.getElementById("timer");
+
+    if (playerModes.includes(mode) || mode == "paused") {
+        timer.innerText = "Time left: " + timeLeft + "s";
+        timer.className = timeLeft <= 5 ? "timer-low" : "";
+    } else {
+        timer.innerText = "";
+    }
+}
+
+// every second: only counts down while the player is picking a move
+// (not during the intro, pause, end screens, or while waiting for the server)
+setInterval(function () {
+    if (!playerModes.includes(mode)) {
+        return;
+    }
+
+    timeLeft--;
+
+    if (timeLeft <= 0) {
+        timeLeft = 0;
+        usingSkill = -1;
+        sendAction("skip");    // the server writes "... took too long and lost their turn!"
+        return;
+    }
+
+    showTimer();
+}, 1000);
+
+// ---------- pause ----------
+
+function pauseGame() {
+    if (!playerModes.includes(mode)) {
+        return;
+    }
+
+    pausedFrom = mode;
+    mode = "paused";
+    pauseSelected = 0;
+
+    document.getElementById("pause").style.display = "block";
+    showPauseButtons();
+    updateScreen();
+}
+
+function resumeGame() {
+    if (mode != "paused") {
+        return;
+    }
+
+    mode = pausedFrom;
+    document.getElementById("pause").style.display = "none";
+    updateScreen();
+}
+
+function showPauseButtons() {
+    document.getElementById("resume-button").className = pauseSelected == 0 ? "is-selected" : "";
+    document.getElementById("exit-button").className = pauseSelected == 1 ? "is-selected" : "";
+}
+
+function exitBattle() {
+    if (mode != "paused") {
+        return;
+    }
+    if (!confirm("Leave this battle? It counts as running away: no XP, and you stay on this floor.")) {
+        return;
+    }
+
+    exiting = true;
+    usingSkill = -1;
+    document.getElementById("pause").style.display = "none";
+    sendAction("exit");
 }
 
 // start
