@@ -1,6 +1,7 @@
 <?php
     session_start();
     include("includes/config.php");
+    include("includes/auth.php");
     include("includes/db.php");
     include("includes/queries.php");
 
@@ -22,17 +23,7 @@
             $errors[] = "Username must be " . $config["username_min"] . "-" . $config["username_max"] . " characters: letters, numbers and _ only.";
         }
 
-        if(strlen($password) < $config["password_min"] || strlen($password) > $config["password_max"]){
-            $errors[] = "Password must be " . $config["password_min"] . "-" . $config["password_max"] . " characters long.";
-        }
-
-        if(!preg_match("/[A-Z]/", $password) || !preg_match("/[0-9]/", $password)){
-            $errors[] = "Password needs at least 1 uppercase letter and 1 number.";
-        }
-
-        if($password != $confirm){
-            $errors[] = "Passwords do not match.";
-        }
+        $errors = array_merge($errors, passwordErrors($password, $confirm));
 
         if(empty($errors) && findAccount($username)){
             $errors[] = "That username is already taken.";

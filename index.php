@@ -21,13 +21,15 @@
             <br>
             <button class="menu-button" onclick="window.location.href='saves.php'">Continue</button>
             <br>
-            <button class="menu-button" onclick="window.location.href='account.php'">Account</button>
+            <button class="menu-button" onclick="window.location.href='account.php'">Profile</button>
             <br>
             <button class="menu-button" onclick="window.location.href='logout.php'">Log Out</button>
         <?php } else { ?>
             <button class="menu-button" onclick="window.location.href='login.php'">Log In</button>
             <br>
             <button class="menu-button" onclick="window.location.href='signup.php'">Sign Up</button>
+            <br>
+            <button class="menu-button" onclick="window.location.href='how_to_play.php'">How to Play</button>
         <?php } ?>
     </div>
 <?php include("includes/footer.php"); ?>

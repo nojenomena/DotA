@@ -10,6 +10,13 @@
         return pg_fetch_assoc($result);   // false if not found
     }
 
+    function updatePassword($accountId, $password){
+        global $conn;
+
+        $hash = password_hash($password, PASSWORD_DEFAULT);
+        return pg_query_params($conn, 'UPDATE accounts SET password = $1 WHERE account_id = $2', [$hash, $accountId]);
+    }
+
     function createAccount($username, $password){
         global $conn;
 

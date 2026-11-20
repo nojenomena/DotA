@@ -454,3 +454,18 @@ img.sprite {
     margin-top: 3px;
     margin-bottom: 10px;
 }
+
+/* how to play page */
+.rules h3 {
+    margin-top: 20px;
+    margin-bottom: 8px;
+}
+
+.rules p, .rules li {
+    margin-bottom: 5px;
+    line-height: 1.4;
+}
+
+.rules ul {
+    margin-left: 25px;
+}

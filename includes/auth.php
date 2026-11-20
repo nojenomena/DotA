@@ -27,3 +27,24 @@
             exit();
         }
     }
+
+    // password rules, used by sign up and change password. returns a list of errors
+    function passwordErrors($password, $confirm){
+        global $config;
+
+        $errors = [];
+
+        if(strlen($password) < $config["password_min"] || strlen($password) > $config["password_max"]){
+            $errors[] = "Password must be " . $config["password_min"] . "-" . $config["password_max"] . " characters long.";
+        }
+
+        if(!preg_match("/[A-Z]/", $password) || !preg_match("/[0-9]/", $password)){
+            $errors[] = "Password needs at least 1 uppercase letter and 1 number.";
+        }
+
+        if($password != $confirm){
+            $errors[] = "Passwords do not match.";
+        }
+
+        return $errors;
+    }
