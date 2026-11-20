@@ -28,16 +28,19 @@
         "classes" => [
             "warrior" => [
                 "label" => "Warrior",
+                "image" => "assets/images/warrior.png",
                 "max_hp" => 120, "attack" => 12, "defense" => 10, "speed" => 5,
                 "hp_up"  => 12,  "attack_up" => 2, "defense_up" => 2, "speed_up" => 1,
             ],
             "mage" => [
                 "label" => "Mage",
+                "image" => "assets/images/mage.png",
                 "max_hp" => 80,  "attack" => 16, "defense" => 5,  "speed" => 7,
                 "hp_up"  => 7,   "attack_up" => 3, "defense_up" => 1, "speed_up" => 1,
             ],
             "cleric" => [
                 "label" => "Cleric",
+                "image" => "assets/images/cleric.png",
                 "max_hp" => 95,  "attack" => 9,  "defense" => 7,  "speed" => 6,
                 "hp_up"  => 9,   "attack_up" => 1, "defense_up" => 2, "speed_up" => 1,
             ],

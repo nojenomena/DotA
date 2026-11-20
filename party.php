@@ -142,6 +142,10 @@
 
         <?php foreach($party as $unit){ $withItems = applyEquipment($unit, $items); ?>
             <div class="save-box">
+                <?php $picture = $config["classes"][$unit["unit_class"]]["image"]; ?>
+                <?php if(file_exists($picture)){ ?>
+                    <img class="unit-pic" src="<?php echo $picture; ?>" alt="">
+                <?php } ?>
                 <h3><?php echo htmlspecialchars($unit["unit_name"]); ?> <span class="small-text"><?php echo $config["classes"][$unit["unit_class"]]["label"]; ?> Lv <?php echo $unit["level"]; ?></span></h3>
 
                 <p class="small-text">XP <?php echo $unit["xp"]; ?> / <?php echo xpNeeded($unit["level"]); ?></p>
@@ -205,6 +209,10 @@
         <!-- one box for every empty role -->
         <?php foreach($emptyRoles as $position => $class){ ?>
             <div class="save-box">
+                <?php $picture = $config["classes"][$class]["image"]; ?>
+                <?php if(file_exists($picture)){ ?>
+                    <img class="unit-pic empty-pic" src="<?php echo $picture; ?>" alt="">
+                <?php } ?>
                 <h3>Empty <span class="small-text"><?php echo $config["classes"][$class]["label"]; ?></span></h3>
                 <p class="small-text">Recruit a new Lv 1 <?php echo $config["classes"][$class]["label"]; ?>.</p>
                 <br>

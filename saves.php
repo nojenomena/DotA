@@ -48,6 +48,10 @@
 
                     <?php foreach($save["party"] as $unit){ ?>
                         <p>
+                            <?php $picture = $config["classes"][$unit["unit_class"]]["image"]; ?>
+                            <?php if(file_exists($picture)){ ?>
+                                <img class="mini-pic" src="<?php echo $picture; ?>" alt="">
+                            <?php } ?>
                             <b><?php echo htmlspecialchars($unit["unit_name"]); ?></b>
                             <span class="small-text"><?php echo $config["classes"][$unit["unit_class"]]["label"]; ?> Lv <?php echo $unit["level"]; ?></span><br>
                             <span class="small-text">HP <?php echo $unit["current_hp"]; ?>/<?php echo $unit["max_hp"]; ?> - ATK <?php echo $unit["attack"]; ?> - DEF <?php echo $unit["defense"]; ?> - SPD <?php echo $unit["speed"]; ?></span>

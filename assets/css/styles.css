@@ -469,3 +469,26 @@ img.sprite {
 .rules ul {
     margin-left: 25px;
 }
+
+/* class pictures on the party and saves pages */
+.unit-pic {
+    float: left;
+    width: 48px;
+    height: 48px;
+    margin-right: 10px;
+    object-fit: cover;
+    background-color: gray;
+}
+
+.empty-pic {
+    opacity: 0.35;    /* faded: nobody in this role yet */
+}
+
+.mini-pic {
+    float: left;
+    width: 32px;
+    height: 32px;
+    margin-right: 8px;
+    object-fit: cover;
+    background-color: gray;
+}

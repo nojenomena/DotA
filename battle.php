@@ -62,8 +62,13 @@
         <div id="party-side">
             <?php foreach($battle["party"] as $i => $unit){ ?>
                 <div class="slot" id="party-<?php echo $i; ?>" onclick="clickAlly(<?php echo $i; ?>)">
-                    <!-- PLACEHOLDER: unit picture -->
-                    <div class="sprite"><?php echo strtoupper(substr($unit["unit_class"], 0, 1)); ?></div>
+                    <!-- class picture from config.php, or the first letter if the file isn't there -->
+                    <?php $picture = $config["classes"][$unit["unit_class"]]["image"]; ?>
+                    <?php if(file_exists($picture)){ ?>
+                        <img class="sprite" src="<?php echo $picture; ?>" alt="<?php echo $config["classes"][$unit["unit_class"]]["label"]; ?>">
+                    <?php } else { ?>
+                        <div class="sprite"><?php echo strtoupper(substr($unit["unit_class"], 0, 1)); ?></div>
+                    <?php } ?>
                     <b><?php echo htmlspecialchars($unit["unit_name"]); ?></b> - Lv <?php echo $unit["level"]; ?><br>
                     <span class="small-text"><?php echo $config["classes"][$unit["unit_class"]]["label"]; ?></span>
                     <div class="hp-bar-back"><div class="hp-bar" id="party-bar-<?php echo $i; ?>"></div></div>
