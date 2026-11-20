@@ -67,24 +67,24 @@
                                 <!-- starts (or continues) a battle for this save -->
                                 <form method="POST" action="battle.php">
                                     <input type="hidden" name="save_id" value="<?php echo $save["save_id"]; ?>">
-                                    <button type="submit" class="btn btn-light w-100 mb-2">Play</button>
+                                    <button type="submit" class="btn btn-light w-100 mb-2"><i class="bi bi-play-fill" aria-hidden="true"></i> Play</button>
                                 </form>
-                                <a class="btn btn-outline-light w-100 mb-2" href="party.php?save=<?php echo $save["save_id"]; ?>">Party</a>
+                                <a class="btn btn-outline-light w-100 mb-2" href="party.php?save=<?php echo $save["save_id"]; ?>"><i class="bi bi-people" aria-hidden="true"></i> Party</a>
 
                                 <form method="POST" onsubmit="return confirm('Delete this save? Your party and items will be gone forever.');">
                                     <input type="hidden" name="delete_save" value="<?php echo $save["save_id"]; ?>">
-                                    <button type="submit" class="btn btn-outline-danger w-100">Delete Save</button>
+                                    <button type="submit" class="btn btn-outline-danger w-100"><i class="bi bi-trash" aria-hidden="true"></i> Delete Save</button>
                                 </form>
                             </div>
                         <?php } else { ?>
                             <p class="small-text text-center my-auto py-5">Empty</p>
-                            <a class="btn btn-light w-100 mt-auto" href="new_save.php?slot=<?php echo $slot; ?>">New Game</a>
+                            <a class="btn btn-light w-100 mt-auto" href="new_save.php?slot=<?php echo $slot; ?>"><i class="bi bi-plus-lg" aria-hidden="true"></i> New Game</a>
                         <?php } ?>
                     </div>
                 </div>
             <?php } ?>
         </div>
 
-        <p class="mt-4"><a href="index.php">Back to title</a></p>
+        <p class="mt-4"><a class="btn btn-sm btn-outline-light" href="index.php"><i class="bi bi-arrow-left" aria-hidden="true"></i> Back to title</a></p>
     </div>
 <?php include("includes/footer.php"); ?>

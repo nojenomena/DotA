@@ -133,7 +133,7 @@
         <div id="top-bar" class="d-flex flex-wrap align-items-baseline gap-3">
             <h2>Party - Slot <?php echo $save["slot_number"]; ?></h2>
             <span>Floor <?php echo $save["current_floor"]; ?> / <?php echo $config["total_floors"]; ?></span>
-            <a href="saves.php" class="ms-auto">Back to saves</a>
+            <a class="btn btn-sm btn-outline-light ms-auto" href="saves.php"><i class="bi bi-arrow-left" aria-hidden="true"></i> Back to saves</a>
         </div>
 
         <?php if($message != ""){ ?>
@@ -183,7 +183,7 @@
                                 <form method="POST" style="display: inline;">
                                     <input type="hidden" name="action" value="unequip">
                                     <input type="hidden" name="instance_id" value="<?php echo $item["instance_id"]; ?>">
-                                    <button type="submit" class="btn btn-sm btn-outline-light">Take off</button>
+                                    <button type="submit" class="btn btn-sm btn-outline-light"><i class="bi bi-x-lg" aria-hidden="true"></i> Take off</button>
                                 </form>
                             </p>
                         <?php } } ?>
@@ -204,7 +204,7 @@
                         <form method="POST" onsubmit="return confirm('Dismiss this party member? They will be gone forever.');">
                             <input type="hidden" name="action" value="delete">
                             <input type="hidden" name="unit_id" value="<?php echo $unit["unit_id"]; ?>">
-                            <button type="submit" class="btn btn-sm btn-outline-danger">Dismiss</button>
+                            <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-person-x" aria-hidden="true"></i> Dismiss</button>
                         </form>
                     </div>
                 </div>
@@ -227,7 +227,7 @@
                             <input type="hidden" name="position" value="<?php echo $position; ?>">
                             <div class="input-group input-group-sm">
                                 <input type="text" class="form-control" name="new_name" placeholder="Name" aria-label="Name" maxlength="<?php echo $config["unit_name_max"]; ?>" required>
-                                <button type="submit" class="btn btn-light">Recruit</button>
+                                <button type="submit" class="btn btn-light"><i class="bi bi-person-plus" aria-hidden="true"></i> Recruit</button>
                             </div>
                         </form>
                     </div>
@@ -282,7 +282,7 @@
                             <form method="POST" class="mt-1" onsubmit="return confirm('Throw away this item? It will be gone forever.');">
                                 <input type="hidden" name="action" value="discard">
                                 <input type="hidden" name="instance_id" value="<?php echo $item["instance_id"]; ?>">
-                                <button type="submit" class="btn btn-sm btn-outline-danger">Throw away</button>
+                                <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash" aria-hidden="true"></i> Throw away</button>
                             </form>
                         </td>
                     </tr>

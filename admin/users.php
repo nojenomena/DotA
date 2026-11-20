@@ -52,7 +52,7 @@
 ?>
     <div id="container">
         <h2>Users</h2>
-        <p class="hint mb-3"><a href="index.php">Back to dashboard</a></p>
+        <p class="mb-3"><a class="btn btn-sm btn-outline-light" href="index.php"><i class="bi bi-arrow-left" aria-hidden="true"></i> Back to dashboard</a></p>
 
         <?php if($done != ""){ ?>
             <div class="alert alert-success py-2"><?php echo $done; ?></div>
@@ -88,16 +88,16 @@
                                 <input type="hidden" name="account_id" value="<?php echo $account["account_id"]; ?>">
                                 <?php if($account["role"] == "admin"){ ?>
                                     <input type="hidden" name="role" value="user">
-                                    <button type="submit" class="btn btn-sm btn-outline-light">Make User</button>
+                                    <button type="submit" class="btn btn-sm btn-outline-light"><i class="bi bi-person" aria-hidden="true"></i> Make User</button>
                                 <?php } else { ?>
                                     <input type="hidden" name="role" value="admin">
-                                    <button type="submit" class="btn btn-sm btn-outline-light">Make Admin</button>
+                                    <button type="submit" class="btn btn-sm btn-outline-light"><i class="bi bi-shield-plus" aria-hidden="true"></i> Make Admin</button>
                                 <?php } ?>
                             </form>
                             <form method="POST" action="users.php" style="display: inline;" onsubmit="return confirm('Delete this account and all its saves?');">
                                 <input type="hidden" name="account_id" value="<?php echo $account["account_id"]; ?>">
                                 <input type="hidden" name="delete" value="1">
-                                <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash" aria-hidden="true"></i> Delete</button>
                             </form>
                         <?php } ?>
                     </td>

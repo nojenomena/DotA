@@ -27,8 +27,25 @@ body {
     font-family: 'Trebuchet MS', sans-serif;
 }
 
+/* links inside sentences: no underline, it shows when you point at it */
 a {
     color: lightblue;
+    text-decoration: none;
+}
+
+a:hover {
+    color: white;
+    text-decoration: underline;
+}
+
+/* buttons that are links never get the underline */
+a.btn:hover {
+    text-decoration: none;
+}
+
+/* little gap between an icon and its text */
+.bi {
+    vertical-align: -0.1em;
 }
 
 /* inputs: plain and flat, white border when you click in */
@@ -308,32 +325,90 @@ a {
 #nav {
     background-color: #2b2929;
     border-bottom: 2px solid gray;
+    padding-top: 6px;
+    padding-bottom: 6px;
 }
 
 #nav .navbar-brand {
     font-weight: bold;
     color: white;
+    letter-spacing: 1px;
+}
+
+/* the small gray "Defense of the Alphards" next to DotA (laptop only) */
+#nav .brand-sub {
+    margin-left: 6px;
+    font-size: 13px;
+    font-weight: normal;
+    letter-spacing: 0;
+    color: gray;
 }
 
 #nav .nav-link {
-    color: lightblue;
-    text-decoration: underline;
+    color: lightgray;
+    margin-right: 6px;
+    border-bottom: 2px solid transparent;
 }
 
 #nav .nav-link:hover {
     color: white;
+    text-decoration: none;
 }
 
-#nav .nav-admin {
-    font-weight: bold;
+/* the page you're on: white with a yellow line under it */
+#nav .nav-link.active {
+    color: white;
+    border-bottom-color: yellow;
 }
 
-#nav .navbar-text {
+#nav .nav-admin .bi {
+    color: yellow;
+}
+
+/* username and log out / log in buttons on the right */
+#nav .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#nav .nav-user {
+    padding: 3px 10px;
+    font-size: 14px;
+    border: 1px solid gray;
     color: white;
 }
 
 #nav .navbar-toggler {
     border-color: gray;
+}
+
+/* phone menu: links stacked with more room, buttons full width */
+@media (max-width: 767px) {
+    #nav .navbar-nav {
+        padding-top: 8px;
+    }
+
+    #nav .nav-link {
+        padding: 8px 0;
+        margin-right: 0;
+        border-bottom: 0;
+        border-left: 3px solid transparent;
+        padding-left: 8px;
+    }
+
+    #nav .nav-link.active {
+        border-left-color: yellow;
+    }
+
+    #nav .nav-right {
+        flex-wrap: wrap;
+        padding: 10px 0 6px;
+    }
+
+    #nav .nav-right .btn {
+        flex-grow: 1;
+    }
 }
 
 /* bottom of every page (includes/footer.php) */
@@ -501,25 +576,10 @@ img.sprite {
     color: red;
 }
 
-#nav .navbar-text {
-    padding: 8px 0;
-}
-
 .form-box h3 {
     font-size: 1.3rem;
 }
 
 .rules h3 {
     font-size: 1.4rem;
-}
-
-/* keep the username and links on one line in the menu */
-#nav .navbar-nav {
-    align-items: center;
-}
-
-@media (max-width: 767px) {
-    #nav .navbar-nav {
-        align-items: flex-start;
-    }
 }

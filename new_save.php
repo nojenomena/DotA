@@ -69,10 +69,10 @@
                     </div>
                 <?php } ?>
 
-                <button type="submit" class="btn btn-light w-100 mt-2">Start Climbing</button>
+                <button type="submit" class="btn btn-light w-100 mt-2"><i class="bi bi-play-fill" aria-hidden="true"></i> Start Climbing</button>
             </form>
 
-            <p class="form-links"><a href="saves.php">Back</a></p>
+            <p class="form-links"><a class="btn btn-sm btn-outline-light" href="saves.php"><i class="bi bi-arrow-left" aria-hidden="true"></i> Back</a></p>
         </div>
     </main>
 <?php include("includes/footer.php"); ?>

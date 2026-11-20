@@ -610,13 +610,13 @@ function showEndPopup() {
         showPopup("Tower Cleared!", ["You beat the Final Developer!"].concat(lines), true, "Thanks for playing!");
         document.getElementById("continue-form").style.display = "none";
     } else if (battle.result == "won") {
-        button.innerText = "Next Floor";
+        button.innerHTML = '<i class="bi bi-arrow-up-circle" aria-hidden="true"></i> Next Floor';
         showPopup("Victory!", lines, true, "Enter = Next Floor");
     } else if (battle.result == "lost") {
-        button.innerText = "Try Again";
+        button.innerHTML = '<i class="bi bi-arrow-counterclockwise" aria-hidden="true"></i> Try Again';
         showPopup("Game Over", ["Your party has fallen on floor " + battle.floor + "."].concat(lines), true, "Enter = Try Again");
     } else {
-        button.innerText = "Try Again";
+        button.innerHTML = '<i class="bi bi-arrow-counterclockwise" aria-hidden="true"></i> Try Again';
         showPopup("You Escaped", ["You ran away from floor " + battle.floor + "."], true, "Enter = Try Again");
     }
 }

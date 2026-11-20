@@ -106,7 +106,7 @@
                 <label for="confirm_password" class="form-label">Confirm new password</label>
                 <input type="password" class="form-control mb-4" id="confirm_password" name="confirm_password" maxlength="<?php echo $config["password_max"]; ?>" required>
 
-                <button type="submit" class="btn btn-light w-100">Change Password</button>
+                <button type="submit" class="btn btn-light w-100"><i class="bi bi-key" aria-hidden="true"></i> Change Password</button>
             </form>
 
             <hr class="my-4">
@@ -124,10 +124,10 @@
                 <label for="password" class="form-label">Type your password to confirm</label>
                 <input type="password" class="form-control mb-3" id="password" name="password" required>
 
-                <button type="submit" class="btn btn-outline-danger w-100">Delete My Account</button>
+                <button type="submit" class="btn btn-outline-danger w-100"><i class="bi bi-trash" aria-hidden="true"></i> Delete My Account</button>
             </form>
 
-            <p class="form-links"><a href="index.php">Back</a></p>
+            <p class="form-links"><a class="btn btn-sm btn-outline-light" href="index.php"><i class="bi bi-arrow-left" aria-hidden="true"></i> Back</a></p>
         </div>
     </main>
 <?php include("includes/footer.php"); ?>

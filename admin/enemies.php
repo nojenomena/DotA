@@ -181,7 +181,7 @@
 ?>
     <div id="container">
         <h2>Enemies and Bosses</h2>
-        <p class="hint mb-3"><a href="index.php">Back to dashboard</a></p>
+        <p class="mb-3"><a class="btn btn-sm btn-outline-light" href="index.php"><i class="bi bi-arrow-left" aria-hidden="true"></i> Back to dashboard</a></p>
 
         <?php if($done != ""){ ?>
             <div class="alert alert-success py-2"><?php echo $done; ?></div>
@@ -243,11 +243,11 @@
                         ?>
                     </td>
                     <td>
-                        <button class="btn btn-sm btn-outline-light" onclick="window.location.href='enemies.php?edit=<?php echo $enemy["enemy_id"]; ?>#form'">Edit</button>
+                        <button class="btn btn-sm btn-outline-light" onclick="window.location.href='enemies.php?edit=<?php echo $enemy["enemy_id"]; ?>#form'"><i class="bi bi-pencil" aria-hidden="true"></i> Edit</button>
                         <form method="POST" action="enemies.php" style="display: inline;" onsubmit="return confirm('Delete this enemy?');">
                             <input type="hidden" name="enemy_id" value="<?php echo $enemy["enemy_id"]; ?>">
                             <input type="hidden" name="delete" value="1">
-                            <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                            <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash" aria-hidden="true"></i> Delete</button>
                         </form>
                     </td>
                 </tr>
@@ -313,10 +313,10 @@
                 <input type="file" class="form-control mb-3" id="image" name="image" accept="image/jpeg,image/png,image/gif,image/webp">
 
                 <?php if($editId > 0){ ?>
-                    <button type="submit" class="btn btn-light">Save Changes</button>
-                    <a class="btn btn-outline-light" href="enemies.php">Cancel</a>
+                    <button type="submit" class="btn btn-light"><i class="bi bi-check-lg" aria-hidden="true"></i> Save Changes</button>
+                    <a class="btn btn-outline-light" href="enemies.php"><i class="bi bi-x-lg" aria-hidden="true"></i> Cancel</a>
                 <?php } else { ?>
-                    <button type="submit" class="btn btn-light">Add Enemy</button>
+                    <button type="submit" class="btn btn-light"><i class="bi bi-plus-lg" aria-hidden="true"></i> Add Enemy</button>
                 <?php } ?>
             </form>
         </div>

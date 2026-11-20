@@ -55,11 +55,11 @@
                     <input type="password" class="form-control" id="password" name="password" required>
                 </div>
 
-                <button type="submit" class="btn btn-light w-100">Log In</button>
+                <button type="submit" class="btn btn-light w-100"><i class="bi bi-box-arrow-in-right" aria-hidden="true"></i> Log In</button>
             </form>
 
             <p class="form-links">No account yet? <a href="signup.php">Sign up</a></p>
-            <p class="form-links"><a href="index.php">Back</a></p>
+            <p class="form-links"><a class="btn btn-sm btn-outline-light" href="index.php"><i class="bi bi-arrow-left" aria-hidden="true"></i> Back</a></p>
         </div>
     </main>
 <?php include("includes/footer.php"); ?>

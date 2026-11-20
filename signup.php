@@ -76,11 +76,11 @@
                     <input type="password" class="form-control" id="confirm_password" name="confirm_password" maxlength="<?php echo $config["password_max"]; ?>" required>
                 </div>
 
-                <button type="submit" class="btn btn-light w-100">Create Account</button>
+                <button type="submit" class="btn btn-light w-100"><i class="bi bi-person-plus" aria-hidden="true"></i> Create Account</button>
             </form>
 
             <p class="form-links">Already have an account? <a href="login.php">Log in</a></p>
-            <p class="form-links"><a href="index.php">Back</a></p>
+            <p class="form-links"><a class="btn btn-sm btn-outline-light" href="index.php"><i class="bi bi-arrow-left" aria-hidden="true"></i> Back</a></p>
         </div>
     </main>
 <?php include("includes/footer.php"); ?>

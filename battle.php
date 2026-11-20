@@ -63,7 +63,7 @@
         <div id="top-bar" class="d-flex flex-wrap align-items-baseline gap-3">
             <h2>Floor <?php echo $battle["floor"]; ?> / <?php echo $config["total_floors"]; ?></h2>
             <span id="round">Round <?php echo $battle["round"]; ?></span>
-            <button id="pause-button" class="btn btn-sm btn-outline-light ms-auto" onclick="pauseGame()">Pause</button>
+            <button id="pause-button" class="btn btn-sm btn-outline-light ms-auto" onclick="pauseGame()"><i class="bi bi-pause-fill" aria-hidden="true"></i> Pause</button>
         </div>
 
         <!-- party on the left, enemies on the right (on a phone: party on top) -->
@@ -148,11 +148,11 @@
             <div id="popup-buttons" style="display: none;">
                 <form method="POST" action="battle.php" id="continue-form" style="display: inline;">
                     <input type="hidden" name="save_id" value="<?php echo $battle["save_id"]; ?>">
-                    <button type="submit" id="continue-button" class="btn btn-light">Next Floor</button>
+                    <button type="submit" id="continue-button" class="btn btn-light"><i class="bi bi-arrow-up-circle" aria-hidden="true"></i> Next Floor</button>
                 </form>
-                <a class="btn btn-outline-light" href="party.php?save=<?php echo $battle["save_id"]; ?>">Party</a>
-                <a class="btn btn-outline-light" href="records.php">Records</a>
-                <a class="btn btn-outline-light" href="saves.php">Back to saves</a>
+                <a class="btn btn-outline-light" href="party.php?save=<?php echo $battle["save_id"]; ?>"><i class="bi bi-people" aria-hidden="true"></i> Party</a>
+                <a class="btn btn-outline-light" href="records.php"><i class="bi bi-trophy" aria-hidden="true"></i> Records</a>
+                <a class="btn btn-outline-light" href="saves.php"><i class="bi bi-arrow-left" aria-hidden="true"></i> Back to saves</a>
             </div>
 
             <p class="hint" id="popup-hint"></p>
@@ -165,8 +165,8 @@
             <h1>Paused</h1>
             <p>The timer is stopped.</p>
             <div id="pause-buttons">
-                <button id="resume-button" class="btn btn-outline-light" onclick="resumeGame()">Resume</button>
-                <button id="exit-button" class="btn btn-outline-light" onclick="exitBattle()">Exit Battle</button>
+                <button id="resume-button" class="btn btn-outline-light" onclick="resumeGame()"><i class="bi bi-play-fill" aria-hidden="true"></i> Resume</button>
+                <button id="exit-button" class="btn btn-outline-light" onclick="exitBattle()"><i class="bi bi-door-open" aria-hidden="true"></i> Exit Battle</button>
             </div>
             <p class="hint">Exit Battle counts as running away: no XP, you stay on this floor.</p>
             <p class="hint">Esc / P = resume</p>

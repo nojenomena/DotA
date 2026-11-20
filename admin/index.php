@@ -43,9 +43,9 @@
             <h3 class="mt-4 mb-3">Manage</h3>
             <!-- three buttons side by side (they stack on a phone) -->
             <div class="row g-2">
-                <div class="col-sm-4"><a class="btn btn-light w-100" href="users.php">Users</a></div>
-                <div class="col-sm-4"><a class="btn btn-light w-100" href="enemies.php">Enemies</a></div>
-                <div class="col-sm-4"><a class="btn btn-light w-100" href="items.php">Items</a></div>
+                <div class="col-sm-4"><a class="btn btn-light w-100" href="users.php"><i class="bi bi-people" aria-hidden="true"></i> Users</a></div>
+                <div class="col-sm-4"><a class="btn btn-light w-100" href="enemies.php"><i class="bi bi-bug" aria-hidden="true"></i> Enemies</a></div>
+                <div class="col-sm-4"><a class="btn btn-light w-100" href="items.php"><i class="bi bi-gem" aria-hidden="true"></i> Items</a></div>
             </div>
         </div>
     </main>

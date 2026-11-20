@@ -111,9 +111,9 @@
         </table></div>
 
         <?php if(isset($_SESSION["account_id"])){ ?>
-            <a class="btn btn-light px-5" href="saves.php">Play</a>
+            <a class="btn btn-light px-5" href="saves.php"><i class="bi bi-play-fill" aria-hidden="true"></i> Play</a>
         <?php } else { ?>
-            <a class="btn btn-light px-5" href="signup.php">Sign Up to Play</a>
+            <a class="btn btn-light px-5" href="signup.php"><i class="bi bi-person-plus" aria-hidden="true"></i> Sign Up to Play</a>
         <?php } ?>
     </main>
 <?php include("includes/footer.php"); ?>
