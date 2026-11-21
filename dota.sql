@@ -1,48 +1,30 @@
--- =============================================================
--- Defense of the Alphards - database export
--- Run this whole file in Supabase: SQL Editor -> New query -> paste -> Run
--- Part 1: tables. Part 2: starting data (items, enemies, bosses).
--- Safe to run again: tables are only made if missing, data is skipped if it's there.
--- =============================================================
-
-
--- ======================= PART 1: TABLES =======================
-
--- accounts: one row per registered player
 CREATE TABLE IF NOT EXISTS accounts (
     account_id   SERIAL PRIMARY KEY,
     username     VARCHAR(30)  NOT NULL UNIQUE,
-    password     VARCHAR(255) NOT NULL,              -- password_hash() output, never plain text
+    password     VARCHAR(255) NOT NULL,
     role         VARCHAR(10)  NOT NULL DEFAULT 'user' CHECK (role IN ('user', 'admin')),
     created_at   TIMESTAMPTZ  NOT NULL DEFAULT now()
 );
 
--- for databases made before the role column existed (safe to run again)
 ALTER TABLE accounts ADD COLUMN IF NOT EXISTS role VARCHAR(10) NOT NULL DEFAULT 'user' CHECK (role IN ('user', 'admin'));
 
--- to make someone an admin, sign up normally then run:
--- UPDATE accounts SET role = 'admin' WHERE username = 'yourname';
-
--- save_slots: each player can have multiple save slots (up to 3)
 CREATE TABLE IF NOT EXISTS save_slots (
     save_id        SERIAL PRIMARY KEY,
     account_id     INT         NOT NULL REFERENCES accounts(account_id) ON DELETE CASCADE,
     slot_number    SMALLINT    NOT NULL CHECK (slot_number >= 1),
     current_floor  INT         NOT NULL DEFAULT 1 CHECK (current_floor >= 1),
     highest_floor  INT         NOT NULL DEFAULT 1 CHECK (highest_floor >= 1),
-    is_cleared     BOOLEAN     NOT NULL DEFAULT FALSE,   -- TRUE once the Final Developer is defeated
+    is_cleared     BOOLEAN     NOT NULL DEFAULT FALSE,
     created_at     TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at     TIMESTAMPTZ NOT NULL DEFAULT now(),
     UNIQUE (account_id, slot_number)
 );
 
-
--- party_units: the player's party members in a save slot
 CREATE TABLE IF NOT EXISTS party_units (
     unit_id         SERIAL PRIMARY KEY,
     save_id         INT         NOT NULL REFERENCES save_slots(save_id) ON DELETE CASCADE,
     unit_name       VARCHAR(30) NOT NULL,
-    unit_class      VARCHAR(20) NOT NULL,                 -- matches a class key in config
+    unit_class      VARCHAR(20) NOT NULL,
     party_position  SMALLINT    NOT NULL CHECK (party_position >= 1),
     level           INT         NOT NULL DEFAULT 1 CHECK (level >= 1),
     xp              INT         NOT NULL DEFAULT 0 CHECK (xp >= 0),
@@ -55,8 +37,6 @@ CREATE TABLE IF NOT EXISTS party_units (
     UNIQUE (save_id, party_position)
 );
 
-
--- item_templates: the base stats for all items in the game
 CREATE TABLE IF NOT EXISTS item_templates (
     item_id      SERIAL PRIMARY KEY,
     item_name    VARCHAR(50)  NOT NULL UNIQUE,
@@ -66,12 +46,10 @@ CREATE TABLE IF NOT EXISTS item_templates (
     atk_mult     NUMERIC(4,2) NOT NULL DEFAULT 1.00 CHECK (atk_mult > 0),
     def_mult     NUMERIC(4,2) NOT NULL DEFAULT 1.00 CHECK (def_mult > 0),
     spd_mult     NUMERIC(4,2) NOT NULL DEFAULT 1.00 CHECK (spd_mult > 0),
-    min_floor    INT          NOT NULL DEFAULT 1 CHECK (min_floor >= 1),   -- earliest floor it can drop on
+    min_floor    INT          NOT NULL DEFAULT 1 CHECK (min_floor >= 1),
     description  TEXT
 );
 
-
--- inventory: the items a player has in a save slot; equipped_by is NULL if not equipped
 CREATE TABLE IF NOT EXISTS inventory (
     instance_id     SERIAL PRIMARY KEY,
     save_id         INT         NOT NULL REFERENCES save_slots(save_id) ON DELETE CASCADE,
@@ -81,29 +59,24 @@ CREATE TABLE IF NOT EXISTS inventory (
     obtained_at     TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-
--- enemy_templates: the base stats for all enemies in the game, including bosses
 CREATE TABLE IF NOT EXISTS enemy_templates (
     enemy_id      SERIAL PRIMARY KEY,
     enemy_name    VARCHAR(50) NOT NULL UNIQUE,
     is_boss       BOOLEAN     NOT NULL DEFAULT FALSE,
-    is_final_boss BOOLEAN     NOT NULL DEFAULT FALSE,   -- the Final Developer
-    boss_floor    INT         CHECK (boss_floor >= 1),  -- only for bosses: the floor they guard
+    is_final_boss BOOLEAN     NOT NULL DEFAULT FALSE,
+    boss_floor    INT         CHECK (boss_floor >= 1),
     min_floor     INT         NOT NULL DEFAULT 1 CHECK (min_floor >= 1),
     base_hp       INT         NOT NULL CHECK (base_hp > 0),
     base_attack   INT         NOT NULL CHECK (base_attack >= 0),
     base_defense  INT         NOT NULL CHECK (base_defense >= 0),
     base_speed    INT         NOT NULL CHECK (base_speed >= 0),
     xp_reward     INT         NOT NULL DEFAULT 0 CHECK (xp_reward >= 0),
-    image         VARCHAR(255)                          -- uploaded picture: uploads/bosses/boss_1a2b3c4d.png or a Supabase Storage web address
+    image         VARCHAR(255)
 );
 
--- for databases made before the image column existed (safe to run again)
 ALTER TABLE enemy_templates ADD COLUMN IF NOT EXISTS image VARCHAR(255);
 ALTER TABLE enemy_templates ALTER COLUMN image TYPE VARCHAR(255);
 
-
--- battle_results: one row for every finished battle, score = xp_gained (week 6, records.php)
 CREATE TABLE IF NOT EXISTS battle_results (
     result_id    SERIAL PRIMARY KEY,
     save_id      INT         NOT NULL REFERENCES save_slots(save_id) ON DELETE CASCADE,
@@ -114,14 +87,12 @@ CREATE TABLE IF NOT EXISTS battle_results (
     finished_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
--- sessions: only used on Vercel (see includes/session_db.php), XAMPP keeps sessions in files
 CREATE TABLE IF NOT EXISTS sessions (
     session_id   VARCHAR(128) PRIMARY KEY,
     data         TEXT         NOT NULL DEFAULT '',
     updated_at   TIMESTAMPTZ  NOT NULL DEFAULT now()
 );
 
--- indexes for faster lookups
 CREATE INDEX IF NOT EXISTS idx_save_slots_account ON save_slots(account_id);
 CREATE INDEX IF NOT EXISTS idx_party_units_save   ON party_units(save_id);
 CREATE INDEX IF NOT EXISTS idx_inventory_save     ON inventory(save_id);
@@ -129,7 +100,6 @@ CREATE INDEX IF NOT EXISTS idx_inventory_equipped ON inventory(equipped_by);
 CREATE INDEX IF NOT EXISTS idx_battle_results_save ON battle_results(save_id);
 
 
--- row-level security policies to ensure players can only access their own data
 ALTER TABLE accounts        ENABLE ROW LEVEL SECURITY;
 ALTER TABLE save_slots      ENABLE ROW LEVEL SECURITY;
 ALTER TABLE party_units     ENABLE ROW LEVEL SECURITY;
@@ -139,9 +109,7 @@ ALTER TABLE enemy_templates ENABLE ROW LEVEL SECURITY;
 ALTER TABLE battle_results  ENABLE ROW LEVEL SECURITY;
 ALTER TABLE sessions        ENABLE ROW LEVEL SECURITY;
 
--- ======================= PART 2: STARTING DATA =======================
-
--- Equipment
+-- Items
 
 INSERT INTO item_templates (item_name, slot_type, rarity, hp_mult, atk_mult, def_mult, spd_mult, min_floor, description) VALUES
     ('Wooden Sword',        'weapon',    'common',    1.00, 1.10, 1.00, 1.00, 1,  'Better than bare hands.'),
@@ -158,8 +126,8 @@ INSERT INTO item_templates (item_name, slot_type, rarity, hp_mult, atk_mult, def
     ('Root Access Crown',   'accessory', 'legendary', 1.15, 1.15, 1.15, 1.15, 12, 'Full permissions.')
 ON CONFLICT (item_name) DO NOTHING;
 
+-- Enemies
 
--- Regular enemies (min_floor = first floor they can appear on)
 INSERT INTO enemy_templates (enemy_name, is_boss, is_final_boss, boss_floor, min_floor, base_hp, base_attack, base_defense, base_speed, xp_reward) VALUES
     ('Bug',            FALSE, FALSE, NULL, 1,  40, 8,  3, 4, 15),
     ('Glitch Slime',   FALSE, FALSE, NULL, 1,  55, 9,  5, 3, 18),
@@ -169,11 +137,11 @@ INSERT INTO enemy_templates (enemy_name, is_boss, is_final_boss, boss_floor, min
     ('Merge Conflict', FALSE, FALSE, NULL, 16, 90, 16, 9, 5, 40)
 ON CONFLICT (enemy_name) DO NOTHING;
 
+-- Bosses
 
--- Developer bosses (one every 5 floors, Final Developer on 20)
 INSERT INTO enemy_templates (enemy_name, is_boss, is_final_boss, boss_floor, min_floor, base_hp, base_attack, base_defense, base_speed, xp_reward) VALUES
     ('Stefan, the Architect',       TRUE, FALSE, 5,  5,  300, 16, 10, 6, 150),
     ('Paulo, the Repo Keeper',      TRUE, FALSE, 10, 10, 380, 18, 12, 7, 260),
     ('Jeno, the Database Warden',   TRUE, FALSE, 15, 15, 440, 20, 14, 8, 380),
     ('Jancy, the Final Developer',  TRUE, TRUE,  20, 20, 520, 22, 16, 9, 600)
-ON CONFLICT (enemy_name) DO NOTHING;
+ON CONFLICT (enemy_name) DO NOTHING;
