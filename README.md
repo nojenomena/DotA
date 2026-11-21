@@ -11,16 +11,16 @@ PHP + PostgreSQL (Supabase) + plain HTML, CSS and JavaScript.
 ### Test accounts (made only for grading)
 | Role | Username | Password |
 |------|----------|----------|
-| Admin | PLACEHOLDER | PLACEHOLDER |
-| Regular user | PLACEHOLDER | PLACEHOLDER |
+| Admin | Noje | Jeno12345 |
+| Regular user | User | User12345 |
 
 ### Members
 | Name | Role in the project |
 |------|---------------------|
-| PLACEHOLDER | |
-| PLACEHOLDER | |
-| PLACEHOLDER | |
-| PLACEHOLDER | |
+| Jeno Jimena | Lead Developer |
+| Jancy Pacete | Co-Lead Developer |
+| Paulo Colmenares | UI/UX Developer |
+| Stefan Ynzon | Game Logic Developer |
 
 ## How to play
 - Make an account, then start a New Game in one of your 3 save slots.
