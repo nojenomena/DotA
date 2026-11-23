@@ -35,6 +35,46 @@ function shake(id) {
     }, 400);
 }
 
+// green glow on a box that got healed
+function healGlow(id) {
+    const box = document.getElementById(id);
+    box.style.animation = "heal-glow 0.6s";
+    setTimeout(function () {
+        box.style.animation = "";
+    }, 600);
+}
+
+// status effects: the emoji and name shown under the hp bar
+const statusLooks = {
+    burn: { icon: "🔥", name: "Burn" },
+    poison: { icon: "☠", name: "Poison" },
+    stun: { icon: "💫", name: "Stun" }
+};
+
+// fills the status line with tags like "🔥 Burn 2" (2 = turns left)
+// and gives the box the glow of its strongest effect (stun, then burn, then poison)
+function showStatus(box, lineId, status) {
+    const line = document.getElementById(lineId);
+    line.innerHTML = "";
+
+    const names = Object.keys(status);
+    for (let i = 0; i < names.length; i++) {
+        const look = statusLooks[names[i]] || { icon: "", name: names[i] };
+        const tag = document.createElement("span");
+        tag.className = "status-tag status-" + names[i];
+        tag.textContent = look.icon + " " + look.name + " " + status[names[i]];
+        line.appendChild(tag);
+    }
+
+    const glowOrder = ["stun", "burn", "poison"];
+    for (let i = 0; i < glowOrder.length; i++) {
+        if (status[glowOrder[i]] !== undefined) {
+            box.className = box.className + " has-" + glowOrder[i];
+            return;
+        }
+    }
+}
+
 // shakes the whole battle screen, for critical hits
 function screenShake() {
     const screen = document.getElementById("container");
@@ -110,6 +150,7 @@ function showEffects(oldHps, newLog) {
                 }
                 gotHit = true;
             } else if (change > 0) {
+                healGlow(prefix + i);
                 floatNumber(prefix + i, "+" + change, "lightgreen");
                 gotHealed = true;
             }
@@ -210,7 +251,6 @@ function updateScreen() {
         const box = document.getElementById("party-" + i);
 
         document.getElementById("party-hp-" + i).innerText = "HP " + unit.current_hp + " / " + unit.max_hp;
-        document.getElementById("party-status-" + i).innerText = Object.keys(unit.status).join(", ");
         setBar("party-bar-" + i, unit);
 
         box.className = "slot";
@@ -223,6 +263,7 @@ function updateScreen() {
         if (mode == "ally" && target == i) {
             box.className = box.className + " is-selected";
         }
+        showStatus(box, "party-status-" + i, unit.status);
     }
 
     // enemies
@@ -231,7 +272,6 @@ function updateScreen() {
         const box = document.getElementById("enemy-" + i);
 
         document.getElementById("enemy-hp-" + i).innerText = "HP " + enemy.current_hp + " / " + enemy.max_hp;
-        document.getElementById("enemy-status-" + i).innerText = Object.keys(enemy.status).join(", ");
         setBar("enemy-bar-" + i, enemy);
 
         box.className = "slot enemy-slot";
@@ -244,6 +284,7 @@ function updateScreen() {
         if (mode == "target" && target == i) {
             box.className = box.className + " is-selected";
         }
+        showStatus(box, "enemy-status-" + i, enemy.status);
     }
 
     // menu buttons

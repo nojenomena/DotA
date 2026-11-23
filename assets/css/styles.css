@@ -517,6 +517,32 @@ a.btn:hover {
     100% { transform: translate(0, 0); }
 }
 
+/* green glow when healed */
+@keyframes heal-glow {
+    0% { box-shadow: 0 0 0 lightgreen; }
+    40% { box-shadow: 0 0 18px lightgreen; }
+    100% { box-shadow: 0 0 0 lightgreen; }
+}
+
+/* status tags under the hp bar, like "🔥 Burn 2" */
+.status-tag {
+    display: inline-block;
+    margin: 4px 4px 0 0;
+    padding: 0 5px;
+    font-size: 12px;
+    border: 1px solid;
+}
+
+.status-burn { color: #ff9a3c; border-color: #ff9a3c; }
+.status-poison { color: #7ddc6a; border-color: #7ddc6a; }
+.status-stun { color: #d0d0d0; border-color: #d0d0d0; }
+
+/* glow around a box while it has a status effect (the border color still shows whose turn it is) */
+.has-burn { box-shadow: 0 0 10px #ff7a1a; }
+.has-poison { box-shadow: 0 0 10px #4fc23a; }
+.has-stun { box-shadow: 0 0 10px #bdbdbd; }
+.has-stun .sprite { filter: grayscale(1) brightness(0.7); }
+
 /* players who turned on "reduce motion" in their system settings get no shakes or flashes */
 @media (prefers-reduced-motion: reduce) {
     .slot, #container {
