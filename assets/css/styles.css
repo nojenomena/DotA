@@ -261,14 +261,26 @@ a.btn:hover {
     font-size: 13px;
 }
 
-/* knocked out */
-.is-down {
-    opacity: 0.4;
+/* knocked out: fades to gray and sinks a little */
+.slot {
+    transition: opacity 0.6s, filter 0.6s, transform 0.6s;
 }
 
-/* whose turn it is */
+.is-down {
+    opacity: 0.4;
+    filter: grayscale(1);
+    transform: translateY(4px);
+}
+
+/* whose turn it is: the cyan border gently pulses */
 .is-acting {
     border-color: cyan;
+    animation: acting-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes acting-pulse {
+    0%, 100% { border-color: cyan; }
+    50% { border-color: #0a7d84; }
 }
 
 /* selected enemy or menu command */
@@ -547,6 +559,10 @@ a.btn:hover {
 @media (prefers-reduced-motion: reduce) {
     .slot, #container {
         animation: none !important;
+        transition: none;
+    }
+    .is-down {
+        transform: none;
     }
     .hp-drain {
         transition: none;
