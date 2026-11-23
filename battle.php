@@ -80,7 +80,7 @@
                         <?php } ?>
                         <b><?php echo htmlspecialchars($unit["unit_name"]); ?></b> - Lv <?php echo $unit["level"]; ?><br>
                         <span class="small-text"><?php echo $config["classes"][$unit["unit_class"]]["label"]; ?></span>
-                        <div class="hp-bar-back"><div class="hp-bar" id="party-bar-<?php echo $i; ?>"></div></div>
+                        <div class="hp-bar-back"><div class="hp-drain" id="party-drain-<?php echo $i; ?>"></div><div class="hp-bar" id="party-bar-<?php echo $i; ?>"></div></div>
                         <span class="hp-text" id="party-hp-<?php echo $i; ?>"></span>
                         <span class="small-text" id="party-status-<?php echo $i; ?>"></span>
                     </div>
@@ -99,7 +99,7 @@
                         <b><?php echo htmlspecialchars($enemy["name"]); ?></b>
                         <?php if($enemy["is_boss"]){ ?><span style="color: red;">[BOSS]</span><?php } ?>
                         <br>
-                        <div class="hp-bar-back"><div class="hp-bar" id="enemy-bar-<?php echo $i; ?>"></div></div>
+                        <div class="hp-bar-back"><div class="hp-drain" id="enemy-drain-<?php echo $i; ?>"></div><div class="hp-bar" id="enemy-bar-<?php echo $i; ?>"></div></div>
                         <span class="hp-text" id="enemy-hp-<?php echo $i; ?>"></span>
                         <span class="small-text" id="enemy-status-<?php echo $i; ?>"></span>
                     </div>

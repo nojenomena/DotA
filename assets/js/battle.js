@@ -26,21 +26,41 @@ function playSound(name) {
     sound.play().catch(function () {});
 }
 
-// shakes a party or enemy box (box id like "party-0" or "enemy-2")
+// shakes a party or enemy box and flashes it white (box id like "party-0" or "enemy-2")
 function shake(id) {
     const box = document.getElementById(id);
-    box.style.animation = "shake 0.4s";
+    box.style.animation = "shake 0.4s, hit-flash 0.3s";
     setTimeout(function () {
         box.style.animation = "";
     }, 400);
 }
 
-// the "-25" or "+30" that floats up over a box
-function floatNumber(id, text, color) {
+// shakes the whole battle screen, for critical hits
+function screenShake() {
+    const screen = document.getElementById("container");
+    screen.style.animation = "screen-shake 0.35s";
+    setTimeout(function () {
+        screen.style.animation = "";
+    }, 350);
+}
+
+// true if a "Critical hit!" line in the log is about this fighter taking this much damage
+function wasCrit(newLog, name, damage) {
+    for (let i = 0; i < newLog.length; i++) {
+        const line = newLog[i];
+        if (line.includes("Critical hit!") && line.includes(name) && line.includes(" " + damage + " damage")) {
+            return true;
+        }
+    }
+    return false;
+}
+
+// the "-25" or "+30" that floats up over a box (big = critical hit)
+function floatNumber(id, text, color, big) {
     const box = document.getElementById(id);
     const number = document.createElement("div");
 
-    number.className = "float-number";
+    number.className = big ? "float-number is-crit" : "float-number";
     number.innerText = text;
     number.style.color = color;
     box.appendChild(number);
@@ -66,6 +86,7 @@ function getHps() {
 function showEffects(oldHps, newLog) {
     let gotHit = false;
     let gotHealed = false;
+    let gotCrit = false;
 
     const groups = [["party", battle.party], ["enemies", battle.enemies]];
     for (let g = 0; g < groups.length; g++) {
@@ -77,14 +98,26 @@ function showEffects(oldHps, newLog) {
             const change = list[i].current_hp - oldHps[name][i];
 
             if (change < 0) {
+                const fighterName = name == "party" ? list[i].unit_name : list[i].name;
+                const isCrit = wasCrit(newLog, fighterName, -change);
+
                 shake(prefix + i);
-                floatNumber(prefix + i, change, "red");
+                if (isCrit) {
+                    floatNumber(prefix + i, change + " CRIT!", "gold", true);
+                    gotCrit = true;
+                } else {
+                    floatNumber(prefix + i, change, "red");
+                }
                 gotHit = true;
             } else if (change > 0) {
                 floatNumber(prefix + i, "+" + change, "lightgreen");
                 gotHealed = true;
             }
         }
+    }
+
+    if (gotCrit) {
+        screenShake();
     }
 
     // only one sound at a time
@@ -107,11 +140,24 @@ function actor() {
 }
 
 // hp bar color and width
+// the red "drain" bar behind it stays at the old hp for a moment, then slides down
 function setBar(id, fighter) {
     const bar = document.getElementById(id);
+    const drain = document.getElementById(id.replace("-bar-", "-drain-"));
     const percent = fighter.current_hp / fighter.max_hp * 100;
 
     bar.style.width = percent + "%";
+
+    const oldPercent = drain.dataset.percent === undefined ? percent : Number(drain.dataset.percent);
+    drain.dataset.percent = percent;
+    if (percent < oldPercent) {
+        setTimeout(function () {
+            drain.style.width = drain.dataset.percent + "%";
+        }, 400);
+    } else if (percent > oldPercent || drain.style.width == "") {
+        // healed, or the first time the bar is drawn: no delay
+        drain.style.width = percent + "%";
+    }
 
     if (percent > 50) {
         bar.style.backgroundColor = "green";
