@@ -1,6 +1,4 @@
 <?php
-    // top of every page. set $pageTitle before including this
-    // pages inside a folder (like admin/) set $root = "../" so the css link still works
     if(!isset($pageTitle)){
         $pageTitle = "Defense of the Alphards";
     }

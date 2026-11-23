@@ -1,8 +1,4 @@
 <?php
-    // picture uploads. returns ["path" => "...", "error" => ""]
-    // with Supabase Storage set up (db_config.php or Vercel settings) the path is the picture's web address,
-    // without it the picture goes in uploads/ like before. $folder is like "uploads/enemies/"
-
     // true when the Supabase Storage details are filled in
     function storageReady(){
         global $supabaseUrl, $supabaseKey, $storageBucket;

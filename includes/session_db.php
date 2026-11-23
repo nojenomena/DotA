@@ -1,8 +1,4 @@
 <?php
-    // keeps sessions in the database instead of files.
-    // only used on Vercel (api/index.php turns it on): there every request can run on a different
-    // short-lived server, so session files would get lost. on XAMPP normal file sessions are used.
-    // php needs a class with these 6 functions to save sessions somewhere else.
 
     class DatabaseSessions implements SessionHandlerInterface {
 

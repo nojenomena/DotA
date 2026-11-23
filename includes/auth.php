@@ -1,7 +1,4 @@
 <?php
-    // login and role checks. include this after session_start()
-    // pages inside a folder (like admin/) set $root = "../" first so the links still work
-
     function isAdmin(){
         return isset($_SESSION["role"]) && $_SESSION["role"] == "admin";
     }

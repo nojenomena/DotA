@@ -9,7 +9,7 @@
 ?>
     <main class="center-page">
         <div class="title-box">
-            <!-- PLACEHOLDER: logo picture (paulo) -->
+            
             <h1 id="title">Defense of the Alphards</h1>
             <p id="subtitle">Climb the tower. Defeat the Developers.</p>
 
