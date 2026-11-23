@@ -555,9 +555,55 @@ a.btn:hover {
 .has-stun { box-shadow: 0 0 10px #bdbdbd; }
 .has-stun .sprite { filter: grayscale(1) brightness(0.7); }
 
+/* boss floor intro: red box and a red flash */
+#popup-box.is-boss {
+    border-color: red;
+    animation: boss-flash 0.9s;
+}
+
+#popup-box.is-boss h1 {
+    color: #ff4d4d;
+}
+
+@keyframes boss-flash {
+    0% { box-shadow: 0 0 0 red; transform: scale(1.15); }
+    30% { box-shadow: 0 0 60px red; transform: scale(1); }
+    100% { box-shadow: 0 0 15px red; }
+}
+
+/* victory box: gold border and a gold burst */
+#popup-box.is-victory {
+    border-color: gold;
+    box-shadow: 0 0 20px gold;
+    animation: victory-burst 0.8s ease-out;
+}
+
+#popup-box.is-victory h1 {
+    color: gold;
+}
+
+@keyframes victory-burst {
+    0% { box-shadow: 0 0 0 gold; transform: scale(0.85); }
+    50% { box-shadow: 0 0 80px gold; transform: scale(1.05); }
+    100% { box-shadow: 0 0 20px gold; transform: scale(1); }
+}
+
+/* level up line in the victory box */
+.level-up-line {
+    color: gold;
+    font-weight: bold;
+    animation: level-pop 0.6s 0.4s both;
+}
+
+@keyframes level-pop {
+    0% { opacity: 0; transform: scale(0.6); }
+    70% { opacity: 1; transform: scale(1.1); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
 /* players who turned on "reduce motion" in their system settings get no shakes or flashes */
 @media (prefers-reduced-motion: reduce) {
-    .slot, #container {
+    .slot, #container, #popup-box, .level-up-line {
         animation: none !important;
         transition: none;
     }

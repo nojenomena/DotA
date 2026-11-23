@@ -622,14 +622,21 @@ document.addEventListener("keydown", function (event) {
 
 // ---------- big box in the middle (floor intro, victory, game over) ----------
 
-function showPopup(title, lines, withButtons, hint) {
+// look: "" for a normal box, "boss" (red flash) or "victory" (gold burst)
+function showPopup(title, lines, withButtons, hint, look) {
     document.getElementById("popup-title").innerText = title;
+    document.getElementById("popup-box").className = look ? "is-" + look : "";
 
     const text = document.getElementById("popup-text");
     text.innerHTML = "";
     for (let i = 0; i < lines.length; i++) {
         const line = document.createElement("p");
         line.innerText = lines[i];
+        // "Aldric reached Lv 3!" lines are shown in gold with a small pop
+        if (lines[i].includes(" reached Lv ")) {
+            line.className = "level-up-line";
+            line.innerText = "⬆ LEVEL UP! " + lines[i];
+        }
         text.appendChild(line);
     }
 
@@ -663,7 +670,7 @@ function showIntro() {
 
     mode = "intro";
     updateScreen();
-    showPopup("Floor " + battle.floor, lines, false, "Press Enter to start");
+    showPopup("Floor " + battle.floor, lines, false, "Press Enter to start", boss != "" ? "boss" : "");
 
     // closes by itself after a bit
     setTimeout(closeIntro, 2500);
@@ -694,11 +701,11 @@ function showEndPopup() {
     document.getElementById("continue-form").style.display = "inline";
 
     if (battle.cleared) {
-        showPopup("Tower Cleared!", ["You beat the Final Developer!"].concat(lines), true, "Thanks for playing!");
+        showPopup("Tower Cleared!", ["You beat the Final Developer!"].concat(lines), true, "Thanks for playing!", "victory");
         document.getElementById("continue-form").style.display = "none";
     } else if (battle.result == "won") {
         button.innerHTML = '<i class="bi bi-arrow-up-circle" aria-hidden="true"></i> Next Floor';
-        showPopup("Victory!", lines, true, "Enter = Next Floor");
+        showPopup("Victory!", lines, true, "Enter = Next Floor", "victory");
     } else if (battle.result == "lost") {
         button.innerHTML = '<i class="bi bi-arrow-counterclockwise" aria-hidden="true"></i> Try Again';
         showPopup("Game Over", ["Your party has fallen on floor " + battle.floor + "."].concat(lines), true, "Enter = Try Again");
