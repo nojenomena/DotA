@@ -31,13 +31,21 @@
         ]);
 
         $url = rtrim($supabaseUrl, "/") . "/storage/v1/object/" . $storageBucket . "/" . $objectPath;
-        @file_get_contents($url, false, $context);
-
-        // first line is like "HTTP/1.1 200 OK"
-        if(!isset($http_response_header[0])){
+        $stream = @fopen($url, "r", false, $context);
+        if(!$stream){
             return false;
         }
-        return preg_match("/ 2\d\d /", $http_response_header[0]) == 1;
+
+        // the reply's headers, read from the stream
+        // ($http_response_header is deprecated in newer PHP, this works in every version)
+        $headers = stream_get_meta_data($stream)["wrapper_data"];
+        fclose($stream);
+
+        // first line is like "HTTP/1.1 200 OK"
+        if(!isset($headers[0])){
+            return false;
+        }
+        return preg_match("/ 2\d\d /", $headers[0]) == 1;
     }
 
     // the web address of a picture in the public bucket
