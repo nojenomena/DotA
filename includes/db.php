@@ -1,6 +1,4 @@
 <?php
-    // database details: from db_config.php on your computer (XAMPP),
-    // or from the environment variables on Vercel (db_config.php is never uploaded)
     $dbConfigFile = __DIR__ . "/db_config.php";
 
     if(file_exists($dbConfigFile)){

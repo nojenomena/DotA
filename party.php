@@ -20,8 +20,6 @@
     $party = getParty($saveId);
     $items = getInventory($saveId);
 
-    // find the empty roles. position 1 = warrior, 2 = mage, 3 = cleric (same order as starting_party)
-    // $emptyRoles looks like [2 => "mage"] if the mage was dismissed
     $emptyRoles = [];
     foreach($config["starting_party"] as $i => $class){
         $position = $i + 1;

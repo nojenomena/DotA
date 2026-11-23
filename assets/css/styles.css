@@ -1,6 +1,3 @@
-/* ---------- Bootstrap, our way ----------
-   bootstrap.min.css is loaded first (includes/header.php), these settings change its look:
-   our dark color, Trebuchet MS, square corners, plain white borders */
 :root, [data-bs-theme=dark] {
     --bs-body-bg: #383636;
     --bs-body-color: white;

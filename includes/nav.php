@@ -4,7 +4,6 @@
     $currentPage = basename($currentPath);
     $inAdmin = strpos($currentPath, "/admin/") !== false || substr($currentPath, -6) == "/admin";
 
-    // menu links: file => [text, icon]
     $navLinks = [
         "how_to_play.php" => ["How to Play", "bi-question-circle"],
     ];

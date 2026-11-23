@@ -20,7 +20,6 @@
     ];
     $editId = 0;
 
-    // Edit link: fill the form with that enemy
     if(isset($_GET["edit"])){
         $enemy = getEnemy((int) $_GET["edit"]);
         if($enemy){
