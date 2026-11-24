@@ -1,5 +1,4 @@
 :root {
-    /* our colors: change them here and the whole site follows */
     --bg: #17171c;          /* page */
     --panel: #212128;       /* boxes */
     --panel-light: #2b2b34; /* inputs, table headers, hover */
@@ -43,7 +42,6 @@ body {
     font-family: 'Trebuchet MS', sans-serif;
 }
 
-/* headings use Cinzel (loaded in includes/header.php), a fantasy-style font */
 h1, h2, h3, #title, #nav .navbar-brand {
     font-family: 'Cinzel', Georgia, serif;
     letter-spacing: 0.5px;
