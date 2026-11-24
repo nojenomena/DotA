@@ -18,9 +18,9 @@
     <div class="container-fluid">
         <?php if(isset($hideNavLinks) && $hideNavLinks){ ?>
             <!-- battle page: only the title, no links out (Pause > Exit Battle is the way out) -->
-            <span class="navbar-brand">DotA <span class="brand-sub d-none d-lg-inline">Defense of the Alphards</span></span>
+            <span class="navbar-brand"><span class="logo logo-small" aria-hidden="true"></span> DotA <span class="brand-sub d-none d-lg-inline">Defense of the Alphards</span></span>
         <?php } else { ?>
-            <a class="navbar-brand" href="<?php echo $root; ?>index.php">DotA <span class="brand-sub d-none d-lg-inline">Defense of the Alphards</span></a>
+            <a class="navbar-brand" href="<?php echo $root; ?>index.php"><span class="logo logo-small" aria-hidden="true"></span> DotA <span class="brand-sub d-none d-lg-inline">Defense of the Alphards</span></a>
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav-links" aria-controls="nav-links" aria-expanded="false" aria-label="Menu">
                 <span class="navbar-toggler-icon"></span>

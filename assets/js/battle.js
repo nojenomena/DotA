@@ -200,12 +200,13 @@ function setBar(id, fighter) {
         drain.style.width = percent + "%";
     }
 
+    // colors are in styles.css (--hp-high, --hp-mid, --hp-low)
     if (percent > 50) {
-        bar.style.backgroundColor = "green";
+        bar.style.backgroundColor = "var(--hp-high)";
     } else if (percent > 20) {
-        bar.style.backgroundColor = "orange";
+        bar.style.backgroundColor = "var(--hp-mid)";
     } else {
-        bar.style.backgroundColor = "red";
+        bar.style.backgroundColor = "var(--hp-low)";
     }
 }
 

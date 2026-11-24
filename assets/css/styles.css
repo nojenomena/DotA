@@ -1,16 +1,35 @@
+:root {
+    /* our colors: change them here and the whole site follows */
+    --bg: #17171c;          /* page */
+    --panel: #212128;       /* boxes */
+    --panel-light: #2b2b34; /* inputs, table headers, hover */
+    --line: #3a3a46;        /* thin borders */
+    --text: #ececf1;
+    --muted: #9b9bab;       /* small gray text */
+    --accent: #e0a43a;      /* amber: main buttons, current page, highlights */
+    --accent-dark: #b8822a;
+    --danger: #e06464;
+    --good: #62c37c;
+    --turn: #4fc1c9;        /* teal border: whose turn it is */
+    --hp-high: #4caf68;
+    --hp-mid: #d9a13a;
+    --hp-low: #d9534f;
+    --radius: 4px;
+}
+
 :root, [data-bs-theme=dark] {
-    --bs-body-bg: #383636;
-    --bs-body-color: white;
+    --bs-body-bg: var(--bg);
+    --bs-body-color: var(--text);
     --bs-body-font-family: 'Trebuchet MS', sans-serif;
-    --bs-border-color: gray;
-    --bs-border-radius: 0;
-    --bs-border-radius-sm: 0;
-    --bs-border-radius-lg: 0;
-    --bs-link-color: lightblue;
-    --bs-link-color-rgb: 173, 216, 230;
-    --bs-link-hover-color: white;
-    --bs-link-hover-color-rgb: 255, 255, 255;
-    --bs-secondary-color: lightgray;
+    --bs-border-color: var(--line);
+    --bs-border-radius: var(--radius);
+    --bs-border-radius-sm: var(--radius);
+    --bs-border-radius-lg: var(--radius);
+    --bs-link-color: var(--accent);
+    --bs-link-color-rgb: 224, 164, 58;
+    --bs-link-hover-color: var(--text);
+    --bs-link-hover-color-rgb: 236, 236, 241;
+    --bs-secondary-color: var(--muted);
 }
 
 * {
@@ -19,19 +38,25 @@
 }
 
 body {
-    background-color: #383636;
-    color: white;
+    background-color: var(--bg);
+    color: var(--text);
     font-family: 'Trebuchet MS', sans-serif;
+}
+
+/* headings use Cinzel (loaded in includes/header.php), a fantasy-style font */
+h1, h2, h3, #title, #nav .navbar-brand {
+    font-family: 'Cinzel', Georgia, serif;
+    letter-spacing: 0.5px;
 }
 
 /* links inside sentences: no underline, it shows when you point at it */
 a {
-    color: lightblue;
+    color: var(--accent);
     text-decoration: none;
 }
 
 a:hover {
-    color: white;
+    color: var(--text);
     text-decoration: underline;
 }
 
@@ -40,47 +65,111 @@ a.btn:hover {
     text-decoration: none;
 }
 
+/* small text inside headings stays in the normal font */
+h1 .small-text, h2 .small-text, h3 .small-text, h1 small, h2 small, h3 small {
+    font-family: 'Trebuchet MS', sans-serif;
+    letter-spacing: 0;
+}
+
 /* little gap between an icon and its text */
 .bi {
     vertical-align: -0.1em;
 }
 
-/* inputs: plain and flat, white border when you click in */
+/* inputs: dark, amber border when you click in */
 .form-control, .form-select {
-    background-color: #2b2929;
-    border: 1px solid gray;
-    color: white;
+    background-color: var(--panel-light);
+    border: 1px solid var(--line);
+    color: var(--text);
 }
 
 .form-control:focus, .form-select:focus {
-    background-color: #2b2929;
-    border-color: white;
-    color: white;
-    box-shadow: none;
+    background-color: var(--panel-light);
+    border-color: var(--accent);
+    color: var(--text);
+    box-shadow: 0 0 0 2px rgba(224, 164, 58, 0.25);
 }
 
 /* buttons: flat, no shadows */
 .btn {
     font-family: 'Trebuchet MS', sans-serif;
     box-shadow: none !important;
+    transition: background-color 0.15s, border-color 0.15s, color 0.15s;
 }
 
-/* tables: same background as the page */
+/* main button (btn-light): amber with dark text */
+.btn-light {
+    background-color: var(--accent);
+    border-color: var(--accent);
+    color: #1a1407;
+    font-weight: bold;
+}
+
+.btn-light:hover, .btn-light:focus, .btn-light:active {
+    background-color: var(--accent-dark) !important;
+    border-color: var(--accent-dark) !important;
+    color: #1a1407 !important;
+}
+
+/* other buttons (btn-outline-light): thin gray border, amber when you point at it */
+.btn-outline-light {
+    border-color: var(--line);
+    color: var(--text);
+    background-color: var(--panel);
+}
+
+.btn-outline-light:hover, .btn-outline-light:focus, .btn-outline-light:active {
+    background-color: var(--panel-light) !important;
+    border-color: var(--accent) !important;
+    color: var(--accent) !important;
+}
+
+/* delete buttons: softer red */
+.btn-outline-danger {
+    border-color: rgba(224, 100, 100, 0.5);
+    color: var(--danger);
+}
+
+.btn-outline-danger:hover {
+    background-color: var(--danger);
+    border-color: var(--danger);
+    color: white;
+}
+
+/* tables: dark header row, faint lines, slightly lighter row when you point at it */
 .table {
     --bs-table-bg: transparent;
-    --bs-table-border-color: gray;
+    --bs-table-border-color: var(--line);
+    --bs-table-hover-bg: var(--panel-light);
+}
+
+.table th {
+    background-color: var(--panel-light);
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.table > tbody > tr:nth-child(even) > td {
+    background-color: rgba(255, 255, 255, 0.02);
+}
+
+.table-bordered {
+    border-color: var(--line);
 }
 
 /* messages (alerts): just a colored line on the left */
 .alert {
     border-width: 0 0 0 4px;
-    background-color: #2b2929;
-    color: white;
+    background-color: var(--panel);
+    color: var(--text);
 }
 
-.alert-danger { border-color: #e05555; }
-.alert-success { border-color: lightgreen; }
-.alert-warning { border-color: yellow; }
+.alert-danger { border-color: var(--danger); }
+.alert-success { border-color: var(--good); }
+.alert-warning { border-color: var(--accent); }
 
 /* pages that sit in the middle of the screen (title, log in, sign up, profile ...) */
 .center-page {
@@ -103,7 +192,7 @@ a.btn:hover {
 
 .title-box {
     width: 100%;
-    max-width: 520px;
+    max-width: 720px;
     text-align: center;
 }
 
@@ -114,7 +203,28 @@ a.btn:hover {
 
 #title {
     font-size: 48px;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
+}
+
+/* the crossed swords logo (assets/images/weblogo.png), colored amber with a CSS mask */
+.logo {
+    display: inline-block;
+    background-color: var(--accent);
+    -webkit-mask: url("../images/weblogo.png") center / contain no-repeat;
+    mask: url("../images/weblogo.png") center / contain no-repeat;
+}
+
+.logo-big {
+    width: 84px;
+    height: 84px;
+    margin-bottom: 18px;
+    filter: drop-shadow(0 0 12px rgba(224, 164, 58, 0.35));
+}
+
+.logo-small {
+    width: 20px;
+    height: 20px;
+    vertical-align: -3px;
 }
 
 @media (max-width: 576px) {
@@ -125,17 +235,32 @@ a.btn:hover {
 
 #subtitle {
     font-size: 20px;
-    color: lightgray;
-    margin-bottom: 40px;
+    color: var(--muted);
+    margin-bottom: 44px;
+}
+
+/* thin amber line under the subtitle */
+#subtitle::after {
+    content: "";
+    display: block;
+    width: 60px;
+    height: 2px;
+    margin: 22px auto 0;
+    background-color: var(--accent);
 }
 
 /* login page starts here */
 
+/* boxes (log in, sign up, profile ...): a lighter panel with a thin amber line on top */
 .form-box {
     width: 100%;
     max-width: 380px;
-    padding: 25px;
-    border: 2px solid white;
+    padding: 28px;
+    background-color: var(--panel);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: var(--radius);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
 }
 
 .form-box-wide {
@@ -159,15 +284,15 @@ a.btn:hover {
 
 .hint {
     font-size: 12px;
-    color: lightgray;
+    color: var(--muted);
 }
 
 /* top nav bar starts here */
 
 #top-bar {
-    padding: 10px;
+    padding: 10px 0;
     margin-bottom: 15px;
-    border-bottom: 2px solid white;
+    border-bottom: 1px solid var(--line);
 }
 
 #top-bar h2 {
@@ -178,18 +303,21 @@ a.btn:hover {
 
 /* save slots and party members (inside bootstrap columns) */
 .save-box {
-    padding: 12px;
-    border: 2px solid white;
+    padding: 16px;
+    background-color: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
 }
 
 .save-box h3 {
-    margin-bottom: 10px;
-    border-bottom: 1px solid gray;
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--line);
 }
 
 .small-text {
     font-size: 13px;
-    color: lightgray;
+    color: var(--muted);
 }
 
 /* actual battle section */
@@ -198,9 +326,10 @@ a.btn:hover {
     position: relative;
     min-height: 80px;
     margin-bottom: 10px;
-    padding: 8px;
-    border: 2px solid gray;
-    background-color: #2b2929;
+    padding: 10px;
+    border: 2px solid var(--line);
+    border-radius: var(--radius);
+    background-color: var(--panel);
 }
 
 .sprite {
@@ -208,7 +337,8 @@ a.btn:hover {
     width: 60px;
     height: 60px;
     margin-right: 10px;
-    background-color: gray;
+    background-color: #8d8d9a;
+    border-radius: var(--radius);
     font-size: 30px;
     text-align: center;
     line-height: 60px;
@@ -218,7 +348,7 @@ a.btn:hover {
     float: right;
     margin-right: 0px;
     margin-left: 10px;
-    background-color: darkred;
+    background-color: #7a2c2c;
 }
 
 .enemy-slot {
@@ -226,21 +356,26 @@ a.btn:hover {
 }
 
 .enemy-slot.is-boss {
-    border-color: red;
+    border-color: #a83a3a;
+    background-color: #261c1f;
 }
 
 /* hp bar */
+/* hp bar: dark track, rounded ends */
 .hp-bar-back {
     position: relative;
-    height: 12px;
-    margin-top: 4px;
-    background-color: white;
+    height: 10px;
+    margin-top: 6px;
+    background-color: #0f0f13;
+    border-radius: 5px;
     overflow: hidden;
 }
 
 .hp-bar {
     position: relative;
-    height: 12px;
+    height: 10px;
+    border-radius: 5px;
+    transition: width 0.25s, background-color 0.25s;
 }
 
 /* red bar behind the hp bar that shows how much was just lost */
@@ -248,8 +383,9 @@ a.btn:hover {
     position: absolute;
     top: 0;
     left: 0;
-    height: 12px;
-    background-color: #b02a2a;
+    height: 10px;
+    border-radius: 5px;
+    background-color: #8f2f2f;
     transition: width 0.6s ease-out;
 }
 
@@ -269,35 +405,41 @@ a.btn:hover {
     transform: translateY(4px);
 }
 
-/* whose turn it is: the cyan border gently pulses */
+/* whose turn it is: the teal border gently pulses */
 .is-acting {
-    border-color: cyan;
+    border-color: var(--turn);
     animation: acting-pulse 1.4s ease-in-out infinite;
 }
 
 @keyframes acting-pulse {
-    0%, 100% { border-color: cyan; }
-    50% { border-color: #0a7d84; }
+    0%, 100% { border-color: var(--turn); }
+    50% { border-color: #1f5f64; }
 }
 
 /* selected enemy or menu command */
 .is-selected {
-    border-color: yellow;
+    border-color: var(--accent);
 }
 
 /* bottom part */
 #battle-log {
     height: 160px;
     overflow-y: auto;
-    padding: 8px;
-    border: 2px solid white;
+    padding: 10px;
+    background-color: #111115;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
     font-family: monospace;
+    font-size: 13px;
+    color: #c9c9d4;
 }
 
 #menu-box {
     min-height: 160px;
-    padding: 8px;
-    border: 2px solid white;
+    padding: 12px;
+    background-color: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
 }
 
 #message {
@@ -311,15 +453,24 @@ a.btn:hover {
     font-family: 'Trebuchet MS', sans-serif;
     font-size: 15px;
     text-align: left;
-    border: 2px solid gray;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
     cursor: pointer;
-    background-color: #efefef;
-    color: black;
+    background-color: var(--panel-light);
+    color: var(--text);
+    transition: background-color 0.1s, border-color 0.1s;
 }
 
+.command:hover {
+    border-color: var(--accent);
+}
+
+/* the chosen command: amber */
 .command.is-selected {
-    border-color: black;
-    background-color: yellow;
+    border-color: var(--accent);
+    background-color: var(--accent);
+    color: #1a1407;
+    font-weight: bold;
 }
 
 .stat-table td {
@@ -344,15 +495,15 @@ a.btn:hover {
 
 /* menu on top (includes/nav.php), a Bootstrap navbar */
 #nav {
-    background-color: #2b2929;
-    border-bottom: 2px solid gray;
+    background-color: var(--panel);
+    border-bottom: 1px solid var(--line);
     padding-top: 6px;
     padding-bottom: 6px;
 }
 
 #nav .navbar-brand {
     font-weight: bold;
-    color: white;
+    color: var(--accent);
     letter-spacing: 1px;
 }
 
@@ -361,29 +512,30 @@ a.btn:hover {
     margin-left: 6px;
     font-size: 13px;
     font-weight: normal;
+    font-family: 'Trebuchet MS', sans-serif;
     letter-spacing: 0;
-    color: gray;
+    color: var(--muted);
 }
 
 #nav .nav-link {
-    color: lightgray;
+    color: var(--muted);
     margin-right: 6px;
     border-bottom: 2px solid transparent;
 }
 
 #nav .nav-link:hover {
-    color: white;
+    color: var(--text);
     text-decoration: none;
 }
 
-/* the page you're on: white with a yellow line under it */
+/* the page you're on: white with an amber line under it */
 #nav .nav-link.active {
-    color: white;
-    border-bottom-color: yellow;
+    color: var(--text);
+    border-bottom-color: var(--accent);
 }
 
 #nav .nav-admin .bi {
-    color: yellow;
+    color: var(--accent);
 }
 
 /* username and log out / log in buttons on the right */
@@ -396,12 +548,13 @@ a.btn:hover {
 #nav .nav-user {
     padding: 3px 10px;
     font-size: 14px;
-    border: 1px solid gray;
-    color: white;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    color: var(--text);
 }
 
 #nav .navbar-toggler {
-    border-color: gray;
+    border-color: var(--line);
 }
 
 /* phone menu: links stacked with more room, buttons full width */
@@ -419,7 +572,7 @@ a.btn:hover {
     }
 
     #nav .nav-link.active {
-        border-left-color: yellow;
+        border-left-color: var(--accent);
     }
 
     #nav .nav-right {
@@ -438,7 +591,8 @@ a.btn:hover {
     padding: 15px;
     text-align: center;
     font-size: 12px;
-    color: gray;
+    color: var(--muted);
+    border-top: 1px solid var(--line);
 }
 
 /* big box in the middle of the battle (intro, victory, game over) */
@@ -458,8 +612,11 @@ a.btn:hover {
     margin-top: 120px;
     padding: 20px;
     text-align: center;
-    background-color: #383636;
-    border: 3px solid white;
+    background-color: var(--panel);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: var(--radius);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
 }
 
 #popup-box h1, #pause-box h1 {
@@ -513,7 +670,7 @@ a.btn:hover {
 /* box flashes white when it gets hit */
 @keyframes hit-flash {
     0% { background-color: #f5f5f5; }
-    100% { background-color: #2b2929; }
+    100% { background-color: var(--panel); }
 }
 
 /* whole battle screen shakes on a critical hit */
@@ -555,6 +712,7 @@ a.btn:hover {
 /* boss floor intro: red box and a red flash */
 #popup-box.is-boss {
     border-color: red;
+    border-top-color: red;
     animation: boss-flash 0.9s;
 }
 
@@ -571,6 +729,7 @@ a.btn:hover {
 /* victory box: gold border and a gold burst */
 #popup-box.is-victory {
     border-color: gold;
+    border-top-color: gold;
     box-shadow: 0 0 20px gold;
     animation: victory-burst 0.8s ease-out;
 }
@@ -617,7 +776,6 @@ a.btn:hover {
 .admin-table th {
     padding: 5px;
     text-align: left;
-    background-color: #2b2929;
 }
 
 /* add / edit form under the admin tables */
@@ -625,8 +783,11 @@ a.btn:hover {
     width: 100%;
     max-width: 460px;
     margin-top: 25px;
-    padding: 15px;
-    border: 2px solid white;
+    padding: 20px;
+    background-color: var(--panel);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: var(--radius);
 }
 
 .admin-form h3 {
@@ -638,7 +799,8 @@ a.btn:hover {
     width: 50px;
     height: 50px;
     object-fit: cover;
-    border: 1px solid gray;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
 }
 
 /* enemy picture in battle (same size as the letter box) */
@@ -668,7 +830,8 @@ img.sprite {
     height: 48px;
     margin-right: 10px;
     object-fit: cover;
-    background-color: gray;
+    background-color: #8d8d9a;
+    border-radius: var(--radius);
 }
 
 .empty-pic {
@@ -681,15 +844,16 @@ img.sprite {
     height: 32px;
     margin-right: 8px;
     object-fit: cover;
-    background-color: gray;
+    background-color: #8d8d9a;
+    border-radius: var(--radius);
 }
 
 /* pause button and turn timer */
 
 #pause-buttons .btn.is-selected {
-    background-color: yellow;
-    border-color: yellow;
-    color: black;
+    background-color: var(--accent);
+    border-color: var(--accent);
+    color: #1a1407;
     font-weight: bold;
 }
 
